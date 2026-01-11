@@ -1,26 +1,13 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
-
-export default auth((req) => {
-  // Protect admin routes with RBAC
-  if (req.nextUrl.pathname.startsWith("/admin")) {
-    if (!req.auth?.user) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/signin";
-      url.searchParams.set("callbackUrl", req.nextUrl.pathname);
-      return NextResponse.redirect(url);
-    }
-
-    if (!req.auth.user.isAdmin) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  }
-
+export default function middleware() {
+  // NOTE: We intentionally avoid importing Auth/Prisma in middleware (Edge runtime).
+  // Admin access control is enforced in `/app/admin/layout.tsx` (Node runtime).
   return NextResponse.next();
-});
+}
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  // Match nothing (keeps this file from running while we use Node-side guards).
+  matcher: ["/__dwc_middleware_disabled__"],
 };
 

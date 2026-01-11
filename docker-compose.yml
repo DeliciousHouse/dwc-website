@@ -7,8 +7,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-dwc}
       POSTGRES_USER: ${POSTGRES_USER:-dwc}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dwc}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +16,9 @@ services:
       retries: 20
 
   web:
-    image: node:20-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.web.dev
     container_name: dwc-web
     working_dir: /app
     depends_on:
@@ -26,8 +26,12 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: development
+      CI: "true"
       DATABASE_URL: ${DATABASE_URL:-postgresql://dwc:dwc@db:5432/dwc?schema=public}
       NEXT_TELEMETRY_DISABLED: "1"
+      # Prisma 7 + Next (react-server) can accidentally resolve the "client" engine.
+      # Force the native query engine for local Docker dev.
+      PRISMA_CLIENT_ENGINE_TYPE: "binary"
     ports:
       - "3000:3000"
     volumes:
@@ -40,7 +44,8 @@ services:
         corepack enable &&
         pnpm config set store-dir /pnpm/store &&
         pnpm install --no-frozen-lockfile &&
-        pnpm dev -- --hostname 0.0.0.0 --port 3000
+        cd apps/web && pnpm prisma generate && cd /app &&
+        pnpm -C apps/web dev
       "
 
   pgadmin:

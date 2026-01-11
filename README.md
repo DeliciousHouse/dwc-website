@@ -37,5 +37,5 @@ Use the DB connection values from your `.env` (host is `db` from inside Docker, 
 ### Notes
 
 - **Env template**: This repo includes `env.example` and (when not filtered by tooling) `.env.example`. Either can be copied to `.env`.
-- **Ports**: web `3000`, postgres `5432`, pgAdmin `5050`.
+- **Ports**: web `3000`, pgAdmin `5050`. (Postgres is not published to the host by default; it’s reachable as `db:5432` inside Docker.)
 

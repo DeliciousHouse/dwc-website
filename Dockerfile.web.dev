@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Enable pnpm via Corepack (matches repo root packageManager)
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+
+# Pre-copy manifests for better layer caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/package.json
+COPY packages/shared/package.json packages/shared/package.json
+
+# Install workspace deps into the image layer cache.
+# In docker-compose we still mount volumes for node_modules, but this makes rebuilds faster.
+RUN pnpm install --no-frozen-lockfile
+
+EXPOSE 3000
+
