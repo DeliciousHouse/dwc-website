@@ -14,8 +14,11 @@ export default function CheckoutSuccessPage() {
         >
           Back to shop
         </Link>
-        <Link className="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-950 hover:bg-zinc-50 dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-white/5" href="/admin/products">
-          Admin
+        <Link
+          className="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-950 hover:bg-zinc-50 dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-white/5"
+          href="/"
+        >
+          Home
         </Link>
       </div>
     </div>

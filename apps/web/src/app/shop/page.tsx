@@ -23,11 +23,7 @@ export default async function ShopPage() {
 
       {products.length === 0 ? (
         <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-600 dark:border-white/10 dark:bg-black dark:text-zinc-300">
-          No products yet. Add some in{" "}
-          <Link className="underline underline-offset-4 hover:text-zinc-950 dark:hover:text-white" href="/admin/products">
-            Admin
-          </Link>
-          .
+          No bottles yet — check back soon.
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
