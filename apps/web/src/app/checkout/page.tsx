@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { getCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
 import { CheckoutForm } from "@/app/checkout/checkout-form";
 
+export const dynamic = "force-dynamic";
+
 export default async function CheckoutPage() {
   const cart = await getCart();
   const products = cart.items.length
-    ? await prisma.product.findMany({ where: { id: { in: cart.items.map((i) => i.productId) } } })
+    ? await getPrisma().product.findMany({ where: { id: { in: cart.items.map((i) => i.productId) } } })
     : [];
   const byId = new Map(products.map((p) => [p.id, p]));
 

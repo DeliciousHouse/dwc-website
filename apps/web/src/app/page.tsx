@@ -1,19 +1,14 @@
 import Link from "next/link";
-import Image from "next/image";
+import { SiteImage } from "@/components/site-image";
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Image
-            src="/invert_DW_logo.png"
-            alt="Delicious Wines"
-            width={64}
-            height={64}
-            className="rounded-lg bg-black p-2"
-            priority
-          />
+          <div className="rounded-lg bg-black p-2">
+            <SiteImage id="logoInverted" className="h-16 w-16" priority />
+          </div>
           <div>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Delicious Wines</h1>
             <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-300">

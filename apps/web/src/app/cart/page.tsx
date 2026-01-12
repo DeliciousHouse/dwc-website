@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { getCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/ui/button";
@@ -12,7 +12,7 @@ export default async function CartPage() {
   const productIds = cart.items.map((i) => i.productId);
 
   const products = productIds.length
-    ? await prisma.product.findMany({ where: { id: { in: productIds } } })
+    ? await getPrisma().product.findMany({ where: { id: { in: productIds } } })
     : [];
 
   const byId = new Map(products.map((p) => [p.id, p]));

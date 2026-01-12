@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
@@ -8,7 +8,7 @@ import { deleteProductAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
+  const products = await getPrisma().product.findMany({
     orderBy: [{ updatedAt: "desc" }],
   });
 

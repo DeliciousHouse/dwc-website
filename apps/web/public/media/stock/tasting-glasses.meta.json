@@ -1,0 +1,49 @@
+{
+  "original": {
+    "filename": "tasting-glasses.jpg",
+    "width": 550,
+    "height": 775
+  },
+  "variants": {
+    "tasting-glasses-480.webp": {
+      "width": 480,
+      "height": 676
+    },
+    "tasting-glasses-480.avif": {
+      "width": 480,
+      "height": 676
+    },
+    "tasting-glasses-768.webp": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-768.avif": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1024.webp": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1024.avif": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1440.webp": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1440.avif": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1920.webp": {
+      "width": 550,
+      "height": 775
+    },
+    "tasting-glasses-1920.avif": {
+      "width": 550,
+      "height": 775
+    }
+  }
+}

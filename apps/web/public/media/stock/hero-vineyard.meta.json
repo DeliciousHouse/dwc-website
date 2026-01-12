@@ -1,0 +1,49 @@
+{
+  "original": {
+    "filename": "hero-vineyard.jpg",
+    "width": 1300,
+    "height": 867
+  },
+  "variants": {
+    "hero-vineyard-480.webp": {
+      "width": 480,
+      "height": 320
+    },
+    "hero-vineyard-480.avif": {
+      "width": 480,
+      "height": 320
+    },
+    "hero-vineyard-768.webp": {
+      "width": 768,
+      "height": 512
+    },
+    "hero-vineyard-768.avif": {
+      "width": 768,
+      "height": 512
+    },
+    "hero-vineyard-1024.webp": {
+      "width": 1024,
+      "height": 683
+    },
+    "hero-vineyard-1024.avif": {
+      "width": 1024,
+      "height": 683
+    },
+    "hero-vineyard-1440.webp": {
+      "width": 1300,
+      "height": 867
+    },
+    "hero-vineyard-1440.avif": {
+      "width": 1300,
+      "height": 867
+    },
+    "hero-vineyard-1920.webp": {
+      "width": 1300,
+      "height": 867
+    },
+    "hero-vineyard-1920.avif": {
+      "width": 1300,
+      "height": 867
+    }
+  }
+}

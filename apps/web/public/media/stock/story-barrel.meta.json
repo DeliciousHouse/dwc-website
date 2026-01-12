@@ -1,0 +1,49 @@
+{
+  "original": {
+    "filename": "story-barrel.jpg",
+    "width": 1425,
+    "height": 1900
+  },
+  "variants": {
+    "story-barrel-480.webp": {
+      "width": 480,
+      "height": 640
+    },
+    "story-barrel-480.avif": {
+      "width": 480,
+      "height": 640
+    },
+    "story-barrel-768.webp": {
+      "width": 768,
+      "height": 1024
+    },
+    "story-barrel-768.avif": {
+      "width": 768,
+      "height": 1024
+    },
+    "story-barrel-1024.webp": {
+      "width": 1024,
+      "height": 1365
+    },
+    "story-barrel-1024.avif": {
+      "width": 1024,
+      "height": 1365
+    },
+    "story-barrel-1440.webp": {
+      "width": 1425,
+      "height": 1900
+    },
+    "story-barrel-1440.avif": {
+      "width": 1425,
+      "height": 1900
+    },
+    "story-barrel-1920.webp": {
+      "width": 1425,
+      "height": 1900
+    },
+    "story-barrel-1920.avif": {
+      "width": 1425,
+      "height": 1900
+    }
+  }
+}

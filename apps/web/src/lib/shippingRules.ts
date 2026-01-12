@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 
 export async function assertStateAllowed(stateRaw: string) {
@@ -7,7 +7,7 @@ export async function assertStateAllowed(stateRaw: string) {
     throw new AppError("Invalid US state code.", { code: "INVALID_STATE", status: 400 });
   }
 
-  const rule = await prisma.shippingRule.findUnique({ where: { state } });
+  const rule = await getPrisma().shippingRule.findUnique({ where: { state } });
   // Per plan: allow all by default unless explicitly denied.
   if (rule && !rule.isAllowed) {
     throw new AppError("Shipping is not available to this state.", {

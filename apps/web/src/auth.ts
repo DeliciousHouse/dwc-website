@@ -5,7 +5,7 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { z } from "zod";
 
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
 
 const credentialsSchema = z.object({
@@ -19,7 +19,17 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // Lazily resolve Prisma so build-time module evaluation doesn't instantiate Prisma Client.
+  adapter: PrismaAdapter(
+    new Proxy(
+      {},
+      {
+        get(_target, prop) {
+          return (getPrisma() as any)[prop];
+        },
+      }
+    ) as any
+  ),
   session: { strategy: "database" },
   pages: {
     signIn: "/signin",
@@ -46,7 +56,7 @@ export const {
 
         const { email, password } = parsed.data;
 
-        const user = await prisma.user.findUnique({
+        const user = await getPrisma().user.findUnique({
           where: { email },
           select: {
             id: true,

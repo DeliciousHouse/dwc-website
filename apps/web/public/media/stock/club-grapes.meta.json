@@ -1,0 +1,49 @@
+{
+  "original": {
+    "filename": "club-grapes.jpg",
+    "width": 6000,
+    "height": 3376
+  },
+  "variants": {
+    "club-grapes-480.webp": {
+      "width": 480,
+      "height": 270
+    },
+    "club-grapes-480.avif": {
+      "width": 480,
+      "height": 270
+    },
+    "club-grapes-768.webp": {
+      "width": 768,
+      "height": 432
+    },
+    "club-grapes-768.avif": {
+      "width": 768,
+      "height": 432
+    },
+    "club-grapes-1024.webp": {
+      "width": 1024,
+      "height": 576
+    },
+    "club-grapes-1024.avif": {
+      "width": 1024,
+      "height": 576
+    },
+    "club-grapes-1440.webp": {
+      "width": 1440,
+      "height": 810
+    },
+    "club-grapes-1440.avif": {
+      "width": 1440,
+      "height": 810
+    },
+    "club-grapes-1920.webp": {
+      "width": 1920,
+      "height": 1080
+    },
+    "club-grapes-1920.avif": {
+      "width": 1920,
+      "height": 1080
+    }
+  }
+}

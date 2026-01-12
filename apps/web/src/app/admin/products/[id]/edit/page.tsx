@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { Button } from "@/ui/button";
 import { ProductForm } from "../../product-form";
 import { updateProductAction } from "../../actions";
@@ -8,7 +8,7 @@ import { updateProductAction } from "../../actions";
 export const dynamic = "force-dynamic";
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
-  const product = await prisma.product.findUnique({
+  const product = await getPrisma().product.findUnique({
     where: { id: params.id },
   });
 

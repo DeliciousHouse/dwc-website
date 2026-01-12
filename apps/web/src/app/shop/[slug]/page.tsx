@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/ui/button";
 import { addToCartAction } from "@/app/shop/actions";
@@ -8,7 +8,7 @@ import { addToCartAction } from "@/app/shop/actions";
 export const dynamic = "force-dynamic";
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = await prisma.product.findUnique({
+  const product = await getPrisma().product.findUnique({
     where: { slug: params.slug },
   });
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 function slugify(input: string): string {
   return input
@@ -48,7 +48,7 @@ export async function createProductAction(formData: FormData) {
   if (priceCents < 0) throw new Error("priceCents must be >= 0.");
   if (inventoryOnHand < 0) throw new Error("inventoryOnHand must be >= 0.");
 
-  const created = await prisma.product.create({
+  const created = await getPrisma().product.create({
     data: {
       name,
       slug,
@@ -80,13 +80,13 @@ export async function updateProductAction(productId: string, formData: FormData)
   if (priceCents < 0) throw new Error("priceCents must be >= 0.");
   if (inventoryOnHand < 0) throw new Error("inventoryOnHand must be >= 0.");
 
-  const previous = await prisma.product.findUnique({
+  const previous = await getPrisma().product.findUnique({
     where: { id: productId },
     select: { slug: true },
   });
   if (!previous) throw new Error("Product not found.");
 
-  await prisma.product.update({
+  await getPrisma().product.update({
     where: { id: productId },
     data: {
       name,
@@ -108,7 +108,7 @@ export async function updateProductAction(productId: string, formData: FormData)
 }
 
 export async function deleteProductAction(productId: string) {
-  await prisma.product.delete({ where: { id: productId } });
+  await getPrisma().product.delete({ where: { id: productId } });
   revalidatePath("/shop");
   revalidatePath("/admin/products");
 }

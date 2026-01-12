@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { formatMoneyFromCents } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
-  const products = await prisma.product.findMany({
+  const products = await getPrisma().product.findMany({
     where: { isActive: true },
     orderBy: [{ createdAt: "desc" }],
   });

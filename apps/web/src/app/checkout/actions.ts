@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { getCart, clearCart } from "@/lib/cart";
 import { isStateAllowed } from "@/lib/shipping";
 import { writeAuditLog } from "@/lib/audit";
@@ -29,7 +29,7 @@ export async function submitCheckoutAction(_prev: CheckoutResult | null, formDat
     return { ok: false, error: eligibility.reason ? `Shipping blocked: ${eligibility.reason}` : "Shipping is not allowed for that state." };
   }
 
-  const products = await prisma.product.findMany({
+  const products = await getPrisma().product.findMany({
     where: { id: { in: cart.items.map((i) => i.productId) } },
   });
   const byId = new Map(products.map((p) => [p.id, p]));

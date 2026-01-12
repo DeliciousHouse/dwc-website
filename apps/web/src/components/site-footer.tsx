@@ -9,6 +9,7 @@ const LEGAL_LINKS: Array<{ href: string; label: string }> = [
   { href: "/accessibility", label: "Accessibility" },
   { href: "/contact", label: "Contact" },
   { href: "/do-not-sell", label: "Do Not Sell" },
+  { href: "/photo-credits", label: "Photo Credits" },
 ];
 
 export function SiteFooter() {

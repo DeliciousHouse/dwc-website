@@ -1,7 +1,7 @@
 "use server";
 
 import { getCart } from "@/lib/cart";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 
 export type CreatePaymentIntentResult =
@@ -14,7 +14,7 @@ export async function createPaymentIntentAction(): Promise<CreatePaymentIntentRe
   const cart = await getCart();
   if (cart.items.length === 0) return { ok: false, error: "Your cart is empty." };
 
-  const products = await prisma.product.findMany({
+  const products = await getPrisma().product.findMany({
     where: { id: { in: cart.items.map((i) => i.productId) } },
   });
   const byId = new Map(products.map((p) => [p.id, p]));

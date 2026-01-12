@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import "./globals.css";
 import { AgeGate } from "@/components/age-gate";
 import { AnalyticsScripts } from "@/components/analytics-scripts";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteImage } from "@/components/site-image";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/ui/sonner";
 import { getSiteUrl } from "@/lib/site";
@@ -56,14 +56,9 @@ export default function RootLayout({
             <header className="border-b border-zinc-200/70 dark:border-white/10">
               <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
                 <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
-                  <Image
-                    src="/invert_DW_logo.png"
-                    alt="Delicious Wines"
-                    width={34}
-                    height={34}
-                    className="rounded bg-black p-1"
-                    priority
-                  />
+                  <div className="rounded bg-black p-1">
+                    <SiteImage id="logoInverted" className="h-8 w-8" priority />
+                  </div>
                   <span>Delicious Wines</span>
                 </Link>
                 <nav className="flex items-center gap-4 text-sm">

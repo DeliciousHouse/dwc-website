@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export type AuditLogInput = {
   action: string;
@@ -15,7 +15,7 @@ export async function writeAuditLog(input: AuditLogInput) {
   const userAgent = h.get("user-agent");
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip");
 
-  await prisma.auditLog.create({
+  await getPrisma().auditLog.create({
     data: {
       action: input.action,
       entityType: input.entityType,

@@ -1,0 +1,49 @@
+{
+  "original": {
+    "filename": "contact-vineyard.jpg",
+    "width": 4167,
+    "height": 3376
+  },
+  "variants": {
+    "contact-vineyard-480.webp": {
+      "width": 480,
+      "height": 389
+    },
+    "contact-vineyard-480.avif": {
+      "width": 480,
+      "height": 389
+    },
+    "contact-vineyard-768.webp": {
+      "width": 768,
+      "height": 623
+    },
+    "contact-vineyard-768.avif": {
+      "width": 768,
+      "height": 623
+    },
+    "contact-vineyard-1024.webp": {
+      "width": 1024,
+      "height": 830
+    },
+    "contact-vineyard-1024.avif": {
+      "width": 1024,
+      "height": 830
+    },
+    "contact-vineyard-1440.webp": {
+      "width": 1440,
+      "height": 1167
+    },
+    "contact-vineyard-1440.avif": {
+      "width": 1440,
+      "height": 1167
+    },
+    "contact-vineyard-1920.webp": {
+      "width": 1920,
+      "height": 1556
+    },
+    "contact-vineyard-1920.avif": {
+      "width": 1920,
+      "height": 1556
+    }
+  }
+}
