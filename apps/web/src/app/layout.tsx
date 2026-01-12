@@ -57,11 +57,11 @@ export default function RootLayout({
               <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
                 <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
                   <Image
-                    src="/DW_logo.png"
+                    src="/invert_DW_logo.png"
                     alt="Delicious Wines"
                     width={34}
                     height={34}
-                    className="rounded"
+                    className="rounded bg-black p-1"
                     priority
                   />
                   <span>Delicious Wines</span>

@@ -15,6 +15,11 @@
     "db:generate": "pnpm -C apps/web prisma generate",
     "db:migrate": "pnpm -C apps/web prisma migrate dev",
     "db:studio": "pnpm -C apps/web prisma studio"
+  },
+  "pnpm": {
+    "overrides": {
+      "@auth/core": "0.41.1"
+    }
   }
 }
 

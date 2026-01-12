@@ -23,7 +23,7 @@ export default async function CheckoutPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Compliance acknowledgments are required to proceed.
+            Pay fast with Apple Pay / Google Pay (when available), plus required compliance acknowledgments.
           </p>
         </div>
         <Link className="text-sm underline underline-offset-4" href="/cart">
@@ -55,7 +55,7 @@ export default async function CheckoutPage() {
                 <div>{formatMoney(subtotalCents)}</div>
               </div>
               <div className="pt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                Shipping/tax will be calculated during payment (Stripe integration is next).
+                Shipping/tax will be calculated during payment.
               </div>
             </div>
           </div>

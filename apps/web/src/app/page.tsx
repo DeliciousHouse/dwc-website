@@ -7,11 +7,11 @@ export default function Home() {
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Image
-            src="/DW_logo.png"
+            src="/invert_DW_logo.png"
             alt="Delicious Wines"
             width={64}
             height={64}
-            className="rounded-lg"
+            className="rounded-lg bg-black p-2"
             priority
           />
           <div>
