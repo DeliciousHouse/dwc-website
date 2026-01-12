@@ -52,61 +52,72 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AnalyticsScripts />
           <AgeGate />
-          <div className="min-h-dvh bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50">
-            <header className="border-b border-zinc-200/70 dark:border-white/10">
-              <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+          <div className="min-h-dvh bg-background text-foreground">
+            <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+              <div className="dw-container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
                   <div className="rounded bg-black p-1">
                     <SiteImage id="logoInverted" className="h-8 w-8" priority />
                   </div>
                   <span>Delicious Wines</span>
                 </Link>
-                <nav className="flex items-center gap-4 text-sm">
+                <nav className="flex items-center gap-3 text-sm">
                   <Link
-                    className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                     href="/shop"
                   >
                     Shop
                   </Link>
                   <Link
-                    className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                     href="/wine-club"
                   >
-                    Wine Club
+                    Club
                   </Link>
                   <Link
-                    className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
+                    href="/story"
+                  >
+                    Story
+                  </Link>
+                  <Link
+                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
+                    href="/tastings"
+                  >
+                    Tastings
+                  </Link>
+                  <Link
+                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
+                    href="/contact"
+                  >
+                    Contact
+                  </Link>
+                  <Link
+                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
                     href="/blog"
                   >
                     Blog
                   </Link>
                   <Link
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                     href="/cart"
                     aria-label="Cart"
                   >
                     <ShoppingCart className="h-5 w-5" />
                   </Link>
-                  <div className="hidden h-4 w-px bg-zinc-200 dark:bg-white/10 sm:block" />
+                  <div className="hidden h-4 w-px bg-border/70 sm:block" />
                   <div className="flex items-center gap-2">
                     <Link
-                      className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-                      href="/signin"
+                      className="text-muted-foreground hover:text-foreground"
+                      href="/account"
                     >
-                      Login
-                    </Link>
-                    <span className="text-zinc-400 dark:text-zinc-500">|</span>
-                    <Link
-                      className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-                      href="/signup"
-                    >
-                      Create Account
+                      Account
                     </Link>
                   </div>
                 </nav>
               </div>
             </header>
-            <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+            <main className="dw-container py-10">{children}</main>
             <SiteFooter />
           </div>
           <Toaster />
