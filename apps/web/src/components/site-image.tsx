@@ -22,9 +22,9 @@ export function SiteImage({ id, className, priority, sizes, fill, ...rest }: Pro
         fill
         priority={priority}
         sizes={sizes}
+        {...rest}
         className={cn("object-cover", className)}
         style={{ ...rest.style, objectPosition }}
-        {...rest}
       />
     );
   }

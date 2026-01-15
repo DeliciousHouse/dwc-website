@@ -30,9 +30,7 @@ export function getPrisma() {
       ? globalForPrisma.prismaPool ?? new Pool({ connectionString: databaseUrl })
       : undefined;
 
-  if (process.env.NODE_ENV !== "production" && pool) {
-    globalForPrisma.prismaPool = pool;
-  }
+  if (pool) globalForPrisma.prismaPool = pool;
 
   const prisma =
     cached ??

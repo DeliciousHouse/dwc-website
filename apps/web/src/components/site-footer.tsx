@@ -5,7 +5,10 @@ const LEGAL_LINKS: Array<{ href: string; label: string }> = [
   { href: "/privacy", label: "Privacy" },
   { href: "/refunds", label: "Refunds" },
   { href: "/shipping-policy", label: "Shipping Policy" },
+  { href: "/cookies", label: "Cookies" },
+  { href: "/accessibility", label: "Accessibility" },
   { href: "/contact", label: "Contact" },
+  { href: "/do-not-sell", label: "Do Not Sell" },
   { href: "/photo-credits", label: "Photo Credits" },
 ];
 
