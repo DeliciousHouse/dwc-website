@@ -19,9 +19,14 @@ export default function TastingsPage() {
             <Link href="/contact">Get notified</Link>
           </Button>
         </div>
-        <div className="dw-card overflow-hidden">
-          <div className="relative aspect-[4/3]">
-            <SiteImage id="tastingGlasses" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+        <div className="dw-card group overflow-hidden">
+          <div className="relative aspect-[4/5]">
+            <SiteImage
+              id="tastingGlasses"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover transition duration-700 group-hover:scale-105"
+            />
           </div>
         </div>
       </div>

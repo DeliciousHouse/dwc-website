@@ -12,17 +12,17 @@ export default async function ShopPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Shop</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
+          <h1 className="dw-h1">Shop</h1>
+          <p className="dw-lead">
             Browse available bottles. Inventory shown is on-hand.
           </p>
         </div>
       </div>
 
       {products.length === 0 ? (
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-600 dark:border-white/10 dark:bg-black dark:text-zinc-300">
+        <div className="dw-card p-6 text-sm text-muted-foreground">
           No bottles yet — check back soon.
         </div>
       ) : (
@@ -31,14 +31,14 @@ export default async function ShopPage() {
             <Link
               key={p.id}
               href={`/shop/${p.slug}`}
-              className="group rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-zinc-300 dark:border-white/10 dark:bg-black dark:hover:border-white/20"
+              className="group dw-card p-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="truncate font-medium group-hover:underline group-hover:underline-offset-4">
                     {p.name}
                   </div>
-                  <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                  <div className="mt-1 text-sm text-muted-foreground">
                     {formatMoneyFromCents(p.priceCents, p.currency)}
                   </div>
                 </div>
@@ -47,7 +47,7 @@ export default async function ShopPage() {
                     "shrink-0 rounded-full px-2 py-0.5 text-xs",
                     p.inventoryOnHand > 0
                       ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200"
-                      : "bg-zinc-100 text-zinc-700 dark:bg-white/10 dark:text-zinc-200",
+                      : "bg-muted text-muted-foreground",
                   ].join(" ")}
                 >
                   {p.inventoryOnHand > 0 ? `${p.inventoryOnHand} in stock` : "Out of stock"}
@@ -55,7 +55,7 @@ export default async function ShopPage() {
               </div>
 
               {p.description ? (
-                <p className="mt-3 line-clamp-3 text-sm text-zinc-600 dark:text-zinc-300">{p.description}</p>
+                <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{p.description}</p>
               ) : null}
             </Link>
           ))}

@@ -26,9 +26,15 @@ export default function StoryPage() {
           </div>
         </div>
 
-        <div className="dw-card overflow-hidden">
-          <div className="relative aspect-[4/3]">
-            <SiteImage id="storyBarrel" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" priority />
+        <div className="dw-card group overflow-hidden">
+          <div className="relative aspect-[3/4]">
+            <SiteImage
+              id="storyBarrel"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover transition duration-700 group-hover:scale-105"
+              priority
+            />
           </div>
         </div>
       </div>

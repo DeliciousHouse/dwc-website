@@ -19,21 +19,19 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <Link className="text-sm text-zinc-600 hover:underline dark:text-zinc-300" href="/shop">
+        <Link className="text-sm text-muted-foreground hover:text-foreground hover:underline" href="/shop">
           ← Back to shop
         </Link>
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-white/10 dark:bg-black">
+      <div className="dw-card p-6">
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{product.name}</h1>
-          <div className="text-sm text-zinc-600 dark:text-zinc-300">
-            {formatMoney(product.priceCents, product.currency)}
-          </div>
+          <h1 className="dw-h2">{product.name}</h1>
+          <div className="text-sm text-muted-foreground">{formatMoney(product.priceCents, product.currency)}</div>
           {product.description ? (
-            <p className="pt-2 text-sm text-zinc-700 dark:text-zinc-200">{product.description}</p>
+            <p className="pt-2 text-sm text-muted-foreground">{product.description}</p>
           ) : null}
-          <div className="pt-3 text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="pt-3 text-xs text-muted-foreground">
             {product.inventoryOnHand > 0 ? `${product.inventoryOnHand} in stock` : "Out of stock"}
           </div>
         </div>
@@ -46,7 +44,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
               type="number"
               min={1}
               defaultValue={1}
-              className="h-9 w-20 rounded-md border border-zinc-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-black"
+              className="h-9 w-20 rounded-md border border-border bg-background px-3 text-sm"
               disabled={!canAdd}
             />
             <Button type="submit" disabled={!canAdd}>

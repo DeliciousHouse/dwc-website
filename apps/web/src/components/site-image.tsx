@@ -12,6 +12,7 @@ type Props = {
 
 export function SiteImage({ id, className, priority, sizes, fill, ...rest }: Props) {
   const img = getSiteImage(id);
+  const objectPosition = img.focalPoint ? `${img.focalPoint.x * 100}% ${img.focalPoint.y * 100}%` : undefined;
 
   if (fill) {
     return (
@@ -22,6 +23,7 @@ export function SiteImage({ id, className, priority, sizes, fill, ...rest }: Pro
         priority={priority}
         sizes={sizes}
         className={cn("object-cover", className)}
+        style={{ ...rest.style, objectPosition }}
         {...rest}
       />
     );

@@ -24,38 +24,46 @@ export default async function CartPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Cart</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">Review items before checkout.</p>
+          <h1 className="dw-h1">Cart</h1>
+          <p className="dw-lead">Review items before checkout.</p>
         </div>
-        <Link className="text-sm underline underline-offset-4" href="/shop">
+        <Link className="text-sm underline underline-offset-4 hover:text-foreground" href="/shop">
           Continue shopping
         </Link>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-700 dark:border-white/10 dark:bg-black dark:text-zinc-300">
+        <div className="dw-card p-6 text-sm text-muted-foreground">
           Your cart is empty.
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-black">
-            <div className="grid grid-cols-12 gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-3 text-xs font-medium text-zinc-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300">
+          <div className="dw-card overflow-hidden">
+            <div className="hidden grid-cols-12 gap-3 border-b border-border/70 bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground md:grid">
               <div className="col-span-5">Item</div>
               <div className="col-span-2">Price</div>
               <div className="col-span-3">Qty</div>
               <div className="col-span-2 text-right">Actions</div>
             </div>
-            <div className="divide-y divide-zinc-200 dark:divide-white/10">
+            <div className="divide-y divide-border/60">
               {rows.map(({ item, product }) => (
-                <div key={item.productId} className="grid grid-cols-12 items-center gap-3 px-4 py-3 text-sm">
-                  <div className="col-span-5">
+                <div
+                  key={item.productId}
+                  className="flex flex-col gap-3 px-4 py-4 text-sm md:grid md:grid-cols-12 md:items-center"
+                >
+                  <div className="md:col-span-5">
+                    <div className="text-xs text-muted-foreground md:hidden">Item</div>
                     <div className="font-medium">{product!.name}</div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">/{product!.slug}</div>
+                    <div className="text-xs text-muted-foreground">/{product!.slug}</div>
                   </div>
-                  <div className="col-span-2">{formatMoney(product!.priceCents, product!.currency)}</div>
-                  <div className="col-span-3">
+                  <div className="md:col-span-2">
+                    <div className="text-xs text-muted-foreground md:hidden">Price</div>
+                    {formatMoney(product!.priceCents, product!.currency)}
+                  </div>
+                  <div className="md:col-span-3">
+                    <div className="text-xs text-muted-foreground md:hidden">Quantity</div>
                     <form action={updateCartItemAction} className="flex items-center gap-2">
                       <input type="hidden" name="productId" value={item.productId} />
                       <input
@@ -63,17 +71,18 @@ export default async function CartPage() {
                         type="number"
                         min={0}
                         defaultValue={item.qty}
-                        className="h-9 w-24 rounded-md border border-zinc-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-black"
+                        className="h-9 w-24 rounded-md border border-border bg-background px-3 text-sm"
                       />
                       <Button type="submit" variant="secondary">
                         Update
                       </Button>
                     </form>
                   </div>
-                  <div className="col-span-2 flex justify-end">
+                  <div className="md:col-span-2 md:flex md:justify-end">
+                    <div className="text-xs text-muted-foreground md:hidden">Actions</div>
                     <form action={removeFromCartAction}>
                       <input type="hidden" name="productId" value={item.productId} />
-                      <button className="text-sm underline underline-offset-4">Remove</button>
+                      <button className="text-sm underline underline-offset-4 hover:text-foreground">Remove</button>
                     </form>
                   </div>
                 </div>
@@ -81,23 +90,20 @@ export default async function CartPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-white/10 dark:bg-black">
+          <div className="dw-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm">
-              <div className="text-zinc-500 dark:text-zinc-400">Subtotal</div>
+              <div className="text-muted-foreground">Subtotal</div>
               <div className="font-semibold">{formatMoney(subtotalCents)}</div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <form action={clearCartAction}>
                 <Button type="submit" variant="secondary">
                   Clear cart
                 </Button>
               </form>
-              <Link
-                className="inline-flex h-9 items-center justify-center rounded-md bg-zinc-950 px-4 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                href="/checkout"
-              >
-                Checkout
-              </Link>
+              <Button asChild>
+                <Link href="/checkout">Checkout</Link>
+              </Button>
             </div>
           </div>
         </div>

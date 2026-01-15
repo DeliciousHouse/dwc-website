@@ -47,10 +47,10 @@ function InnerPaymentForm({ returnUrl }: { returnUrl: string }) {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-6 dark:border-white/10 dark:bg-black"
+      className="dw-card flex flex-col gap-4 p-6"
     >
       <div className="text-sm font-medium">Payment</div>
-      <div className="text-sm text-zinc-600 dark:text-zinc-300">
+      <div className="text-sm text-muted-foreground">
         Apple Pay and Google Pay will appear automatically when available on your device.
       </div>
 
@@ -126,10 +126,10 @@ export function StripePayment() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-700 dark:border-white/10 dark:bg-black dark:text-zinc-300">
-        <div className="font-medium text-zinc-950 dark:text-white">Payment unavailable</div>
+      <div className="dw-card p-6 text-sm text-muted-foreground">
+        <div className="font-medium text-foreground">Payment unavailable</div>
         <div className="mt-2">{error}</div>
-        <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="mt-2 text-xs text-muted-foreground">
           Add Stripe keys to `.env` and restart `docker compose up`.
         </div>
       </div>
@@ -138,9 +138,7 @@ export function StripePayment() {
 
   if (!stripePromise || !clientSecret) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-700 dark:border-white/10 dark:bg-black dark:text-zinc-300">
-        Loading payment…
-      </div>
+      <div className="dw-card p-6 text-sm text-muted-foreground">Loading payment…</div>
     );
   }
 

@@ -10,7 +10,7 @@ export default function Home() {
     <div className="flex flex-col gap-12">
       {/* Hero */}
       <section className="dw-card relative overflow-hidden">
-        <div className="relative h-[520px]">
+        <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
           <SiteImage
             id="heroVineyard"
             fill
@@ -21,7 +21,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-background/10" />
           <div className="absolute inset-0">
             <div className="dw-container flex h-full items-end pb-10">
-              <div className="max-w-2xl space-y-4">
+              <div className="max-w-2xl space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
                   Curated bottles • Quarterly club • Fast checkout
                 </div>
@@ -88,9 +88,14 @@ export default function Home() {
             <Link href="/story">Read our story</Link>
           </Button>
         </div>
-        <div className="dw-card overflow-hidden">
-          <div className="relative aspect-[4/3]">
-            <SiteImage id="storyBarrel" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+        <div className="dw-card group overflow-hidden">
+          <div className="relative aspect-[3/4]">
+            <SiteImage
+              id="storyBarrel"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover transition duration-700 group-hover:scale-105"
+            />
           </div>
         </div>
       </section>
@@ -120,9 +125,14 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="dw-card overflow-hidden">
+          <div className="dw-card group overflow-hidden">
             <div className="relative aspect-[4/3]">
-              <SiteImage id="clubGrapes" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+              <SiteImage
+                id="clubGrapes"
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
             </div>
           </div>
         </div>

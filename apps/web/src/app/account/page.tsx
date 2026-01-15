@@ -9,7 +9,7 @@ export default function AccountPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="dw-h2">Account</h1>
+        <h1 className="dw-h1">Account</h1>
         <p className="dw-lead mt-2 max-w-2xl">
           Sign in to view your orders, manage your club subscription, and save addresses for faster checkout.
         </p>

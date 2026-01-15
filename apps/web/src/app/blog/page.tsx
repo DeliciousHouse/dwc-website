@@ -33,23 +33,20 @@ export default function BlogPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">The Blog</h1>
-        <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-300">
+        <h1 className="dw-h1">The Blog</h1>
+        <p className="dw-lead mt-2 max-w-2xl">
           Notes, pairings, producers, and what we’re loving right now.
         </p>
       </div>
 
       <div className="grid gap-4">
         {posts.map((p) => (
-          <div
-            key={p.slug}
-            className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-white/10 dark:bg-black"
-          >
-            <div className="text-xs text-zinc-500 dark:text-zinc-400">{p.date}</div>
+          <div key={p.slug} className="dw-card p-5">
+            <div className="text-xs text-muted-foreground">{p.date}</div>
             <div className="mt-1 text-lg font-semibold">{p.title}</div>
-            <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{p.excerpt}</div>
+            <div className="mt-2 text-sm text-muted-foreground">{p.excerpt}</div>
             <div className="mt-4">
-              <Link className="text-sm underline underline-offset-4" href="#">
+              <Link className="text-sm underline underline-offset-4 hover:text-foreground" href="#">
                 Read more (coming soon)
               </Link>
             </div>

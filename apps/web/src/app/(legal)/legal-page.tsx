@@ -10,20 +10,19 @@ export function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="prose prose-zinc max-w-none dark:prose-invert">
-      <div className="not-prose mb-6">
-        <Link
-          href="/"
-          className="text-sm text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-300"
-        >
+    <div className="flex flex-col gap-6">
+      <div>
+        <Link href="/" className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
           ← Back home
         </Link>
       </div>
-      <h1>{title}</h1>
+      <h1 className="dw-h1">{title}</h1>
       {updated ? (
-        <p className="text-sm text-zinc-500">Last updated: {updated}</p>
+        <p className="text-xs text-muted-foreground">Last updated: {updated}</p>
       ) : null}
-      {children}
+      <div className="space-y-4 text-sm text-muted-foreground [&_h2]:dw-h2 [&_h2]:mt-6 [&_h2]:text-foreground [&_ul]:list-disc [&_ul]:pl-5">
+        {children}
+      </div>
     </div>
   );
 }
