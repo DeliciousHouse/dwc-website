@@ -29,6 +29,8 @@ services:
       CI: "true"
       DATABASE_URL: ${DATABASE_URL:-postgresql://dwc:dwc@db:5432/dwc?schema=public}
       NEXT_TELEMETRY_DISABLED: "1"
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       # Prisma 7 + Next (react-server) can accidentally resolve the "client" engine.
       # Force the native query engine for local Docker dev.
       PRISMA_CLIENT_ENGINE_TYPE: "binary"
@@ -44,7 +46,7 @@ services:
         corepack enable &&
         pnpm config set store-dir /pnpm/store &&
         pnpm install --no-frozen-lockfile &&
-        cd apps/web && pnpm prisma generate && cd /app &&
+        cd apps/web && pnpm prisma generate && pnpm prisma db push && cd /app &&
         pnpm -C apps/web dev
       "
 
