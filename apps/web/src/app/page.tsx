@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdSlot } from "@/components/ad-slot";
 import { SiteImage } from "@/components/site-image";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -65,6 +66,12 @@ export default function Home() {
           </div>
         ))}
       </section>
+
+      <AdSlot
+        slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME}
+        minHeightClassName="min-h-[180px]"
+        label="Homepage advertisement"
+      />
 
       {/* Story strip */}
       <section className="grid gap-8 lg:grid-cols-2 lg:items-center">

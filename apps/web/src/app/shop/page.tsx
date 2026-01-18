@@ -1,4 +1,6 @@
 import Link from "next/link";
+
+import { AdSlot } from "@/components/ad-slot";
 import { getPrisma } from "@/lib/db";
 import { formatMoneyFromCents } from "@/lib/money";
 
@@ -20,6 +22,12 @@ export default async function ShopPage() {
           </p>
         </div>
       </div>
+
+      <AdSlot
+        slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SHOP}
+        minHeightClassName="min-h-[180px]"
+        label="Shop advertisement"
+      />
 
       {products.length === 0 ? (
         <div className="dw-card p-6 text-sm text-muted-foreground">

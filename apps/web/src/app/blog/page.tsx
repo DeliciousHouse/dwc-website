@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { AdSlot } from "@/components/ad-slot";
+
 import { posts } from "./posts";
 
 export const metadata = {
@@ -8,7 +10,6 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "";
   const adSlots = [
     process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP,
     process.env.NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE,
@@ -35,27 +36,16 @@ export default function BlogPage() {
                 className="text-sm underline underline-offset-4 hover:text-foreground"
                 href={`/blog/${p.slug}`}
               >
-                Read more (coming soon)
+                Read more
               </Link>
             </div>
 
             {index % 3 === 1 && (
-              <div className="mt-6 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/30 p-4 text-sm text-muted-foreground">
-                {adClient && adSlots[Math.floor(index / 3)] ? (
-                  <ins
-                    className="adsbygoogle block min-h-[120px]"
-                    data-ad-client={adClient}
-                    data-ad-slot={adSlots[Math.floor(index / 3)]}
-                    data-ad-format="auto"
-                    data-full-width-responsive="true"
-                    aria-label="Advertisement"
-                  />
-                ) : (
-                  <div>
-                    Advertisement slot (set `NEXT_PUBLIC_ADSENSE_CLIENT` and slot envs)
-                  </div>
-                )}
-              </div>
+              <AdSlot
+                className="mt-6"
+                slot={adSlots[Math.floor(index / 3)]}
+                label="Blog list advertisement"
+              />
             )}
           </div>
         ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import Script from "next/script";
 import { ShoppingCart } from "lucide-react";
 import "./globals.css";
 import { AgeGate } from "@/components/age-gate";
@@ -44,11 +45,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const adSenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {adSenseClient ? (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseClient}`}
+            crossOrigin="anonymous"
+          />
+        ) : null}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AnalyticsScripts />
           <AgeGate />
