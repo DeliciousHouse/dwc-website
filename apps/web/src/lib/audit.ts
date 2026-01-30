@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { getPrisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 export type AuditLogInput = {
   action: string;
@@ -22,7 +23,12 @@ export async function writeAuditLog(input: AuditLogInput) {
       entityId: input.entityId ?? null,
       userId: input.userId ?? null,
       actorUserId: input.actorUserId ?? null,
-      data: input.data as any,
+      data:
+        input.data === undefined
+          ? undefined
+          : input.data === null
+            ? Prisma.JsonNull
+            : (input.data as Prisma.InputJsonValue),
       ip: ip ?? null,
       userAgent: userAgent ?? null,
     },

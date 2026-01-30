@@ -46,7 +46,20 @@ services:
         corepack enable &&
         pnpm config set store-dir /pnpm/store &&
         pnpm install --no-frozen-lockfile &&
-        cd apps/web && pnpm prisma generate && pnpm prisma db push && cd /app &&
+        cd apps/web &&
+        pnpm prisma generate &&
+        # Ensure the database schema exists before Next renders (prevents Prisma P2021 spam).
+        # `db push` is used here because this repo currently doesn't check in migrations.
+        # Retry briefly in case Postgres reports healthy but is still finalizing startup.
+        i=0; until pnpm prisma db push; do
+          i=$$((i+1));
+          if [ $$i -ge 30 ]; then
+            echo 'Prisma db push failed after 30 attempts' >&2;
+            exit 1;
+          fi;
+          sleep 1;
+        done &&
+        cd /app &&
         pnpm -C apps/web dev
       "
 
