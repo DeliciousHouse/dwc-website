@@ -50,6 +50,44 @@ services:
         pnpm -C apps/web dev
       "
 
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.web.dev
+    container_name: dwc-web-dev
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      CI: "true"
+      DATABASE_URL: ${DATABASE_URL:-postgresql://dwc:dwc@db:5432/dwc?schema=public}
+      NEXT_TELEMETRY_DISABLED: "1"
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      # File watching in bind mounts (Windows/macOS Docker Desktop)
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      # Prisma 7 + Next (react-server) can accidentally resolve the "client" engine.
+      # Force the native query engine for local Docker dev.
+      PRISMA_CLIENT_ENGINE_TYPE: "binary"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - pnpm_store:/pnpm/store
+      - node_modules_root:/app/node_modules
+      - node_modules_web:/app/apps/web/node_modules
+    command: >
+      sh -lc "
+        corepack enable &&
+        pnpm config set store-dir /pnpm/store &&
+        pnpm install --no-frozen-lockfile &&
+        cd apps/web && pnpm prisma generate && pnpm prisma db push && cd /app &&
+        pnpm -C apps/web dev
+      "
+
   pgadmin:
     image: dpage/pgadmin4:8
     container_name: dwc-pgadmin

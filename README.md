@@ -10,6 +10,26 @@ cp .env.example .env 2>/dev/null || cp env.example .env && docker compose up
 
 Then open `http://localhost:3000`.
 
+### Hot-reload dev (Docker)
+
+Run the dev service with bind mounts + polling file watcher:
+
+```bash
+cp .env.example .env 2>/dev/null || cp env.example .env && docker compose up web-dev
+```
+
+Stop it:
+
+```bash
+docker compose down
+```
+
+If dependencies change, rebuild once:
+
+```bash
+docker compose build web-dev
+```
+
 ### Database + Prisma
 
 - **Run migrations**:
