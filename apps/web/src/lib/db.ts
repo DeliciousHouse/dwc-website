@@ -1,6 +1,6 @@
 // Prisma can sometimes resolve to the "client" engine in Next.js builds, which requires Accelerate/adapter.
 // We keep Prisma **lazy** so Next's build-time module evaluation doesn't instantiate it.
-let prismaSingleton: unknown;
+let prismaSingleton: InstanceType<import("@prisma/client").PrismaClient> | undefined;
 
 type GlobalPrisma = typeof globalThis & {
   prisma?: InstanceType<import("@prisma/client").PrismaClient>;
@@ -8,9 +8,8 @@ type GlobalPrisma = typeof globalThis & {
 };
 
 export function getPrisma() {
-  // Default to native engine unless explicitly overridden.
-  process.env.PRISMA_CLIENT_ENGINE_TYPE ??= "binary";
-
+  // Prisma 7 "client" engine requires a driver adapter (or Accelerate URL). In local Docker dev we
+  // repeatedly see Prisma selecting the client engine, so we always provide an adapter.
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { PrismaClient } = require("@prisma/client") as typeof import("@prisma/client");
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -22,7 +21,7 @@ export function getPrisma() {
   const cached =
     process.env.NODE_ENV !== "production"
       ? globalForPrisma.prisma
-      : (prismaSingleton as InstanceType<typeof PrismaClient> | undefined);
+      : prismaSingleton;
 
   const databaseUrl = process.env.DATABASE_URL;
   const pool =

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/ui/dialog";
 import { Button } from "@/ui/button";
 
@@ -20,12 +20,7 @@ function setCookie(name: string, value: string, days: number) {
 }
 
 export function AgeGate() {
-  const [open, setOpen] = useState(false);
-  const alreadyVerified = useMemo(() => getCookie(AGE_COOKIE) === "1", []);
-
-  useEffect(() => {
-    if (!alreadyVerified) setOpen(true);
-  }, [alreadyVerified]);
+  const [open, setOpen] = useState(() => getCookie(AGE_COOKIE) !== "1");
 
   return (
     <Dialog open={open}>

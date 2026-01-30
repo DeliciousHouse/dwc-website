@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { z } from "zod";
+import type { PrismaClient } from "@prisma/client";
 
 import { getPrisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
@@ -21,14 +22,11 @@ export const {
 } = NextAuth({
   // Lazily resolve Prisma so build-time module evaluation doesn't instantiate Prisma Client.
   adapter: PrismaAdapter(
-    new Proxy(
-      {},
-      {
-        get(_target, prop) {
-          return (getPrisma() as any)[prop];
-        },
-      }
-    ) as any
+    new Proxy({} as PrismaClient, {
+      get(_target, prop: keyof PrismaClient) {
+        return getPrisma()[prop];
+      },
+    })
   ),
   session: { strategy: "database" },
   pages: {

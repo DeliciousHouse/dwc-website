@@ -3,6 +3,7 @@ import { getPrisma } from "@/lib/db";
 import { getCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
 import { CheckoutForm } from "@/app/checkout/checkout-form";
+import { TrustBlocks } from "@/components/checkout/trust-blocks";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,10 @@ export default async function CheckoutPage() {
         </div>
 
         <CheckoutForm />
+      </div>
+
+      <div className="mt-6">
+        <TrustBlocks />
       </div>
     </div>
   );

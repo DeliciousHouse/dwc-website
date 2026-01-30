@@ -5,16 +5,20 @@ export type Cart = { items: CartItem[] };
 
 const CART_COOKIE = "dw_cart";
 
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return Boolean(v) && typeof v === "object" && !Array.isArray(v);
+}
+
 function safeParse(json: string | undefined): Cart | null {
   if (!json) return null;
   try {
     const parsed = JSON.parse(json) as unknown;
-    if (!parsed || typeof parsed !== "object") return null;
-    const items = (parsed as any).items;
+    if (!isRecord(parsed)) return null;
+    const items = parsed.items;
     if (!Array.isArray(items)) return { items: [] };
     const normalized: CartItem[] = items
-      .filter((i) => i && typeof i === "object")
-      .map((i) => ({ productId: String((i as any).productId), qty: Number((i as any).qty) }))
+      .filter(isRecord)
+      .map((i) => ({ productId: String(i.productId ?? ""), qty: Number(i.qty ?? 0) }))
       .filter((i) => i.productId && Number.isFinite(i.qty) && i.qty > 0);
     return { items: normalized };
   } catch {

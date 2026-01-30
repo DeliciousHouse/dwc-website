@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
-import { ShoppingCart } from "lucide-react";
 import "./globals.css";
 import { AgeGate } from "@/components/age-gate";
 import { AnalyticsScripts } from "@/components/analytics-scripts";
@@ -11,6 +10,7 @@ import { SiteImage } from "@/components/site-image";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/ui/sonner";
 import { getSiteUrl } from "@/lib/site";
+import { CartDrawerWrapper } from "@/components/cart/cart-drawer-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -108,13 +108,7 @@ export default function RootLayout({
                   >
                     Blog
                   </Link>
-                  <Link
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-                    href="/cart"
-                    aria-label="Cart"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                  </Link>
+                  <CartDrawerWrapper />
                   <div className="hidden h-4 w-px bg-border/70 sm:block" />
                   <div className="flex items-center gap-2">
                     <Link
