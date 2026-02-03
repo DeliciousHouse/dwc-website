@@ -10,7 +10,7 @@
     "dev": "pnpm -C apps/web dev",
     "assets:sync": "tsx scripts/sync-assets.ts",
     "assets:check": "tsx scripts/check-assets.ts",
-    "build": "pnpm assets:check && pnpm -C apps/web build",
+    "build": "npm i --save-dev prisma@latest && npm i @prisma/client@latest && pnpm assets:check && pnpm -C apps/web build",
     "start": "pnpm -C apps/web start",
     "lint": "pnpm -C apps/web lint",
     "typecheck": "pnpm -C apps/web typecheck",

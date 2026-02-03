@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --port 3000",
-    "build": "pnpm -C ../.. assets:check && next build",
+    "build": "npm i --save-dev prisma@latest && npm i @prisma/client@latest && pnpm -C ../.. assets:check && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc -p tsconfig.json --noEmit"
