@@ -10,6 +10,6 @@ function stripTrailingSlash(value: string) {
 export function getSiteUrl() {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (fromEnv) return stripTrailingSlash(fromEnv);
-  return "http://localhost:3000";
+  return "http://localhost:3010";
 }
 

@@ -78,7 +78,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://dwc:dwc@db:5432/dwc?schema=public}
       NEXT_TELEMETRY_DISABLED: "1"
       AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3010}
       # File watching in bind mounts (Windows/macOS Docker Desktop)
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"

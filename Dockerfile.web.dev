@@ -16,5 +16,5 @@ COPY packages/shared/package.json packages/shared/package.json
 # In docker-compose we still mount volumes for node_modules, but this makes rebuilds faster.
 RUN pnpm install --no-frozen-lockfile
 
-EXPOSE 3000
+EXPOSE 3010
 
