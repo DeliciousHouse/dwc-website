@@ -96,6 +96,17 @@ export default function SignInClient() {
           {loading ? "Signing in..." : "Sign in with email"}
         </Button>
       </form>
+
+      <div className="text-sm text-muted-foreground">
+        <a className="underline underline-offset-4 hover:text-foreground" href="/forgot-password">
+          Forgot your password?
+        </a>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        <a className="underline underline-offset-4 hover:text-foreground" href="/verify-email/resend">
+          Resend verification email
+        </a>
+      </div>
     </main>
   );
 }

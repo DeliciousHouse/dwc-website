@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Libre_Bodoni } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
 import "./globals.css";
 import { AgeGate } from "@/components/age-gate";
 import { AnalyticsScripts } from "@/components/analytics-scripts";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteImage } from "@/components/site-image";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/ui/sonner";
 import { getSiteUrl } from "@/lib/site";
+import { getServerConsent } from "@/lib/consent-server";
 import { CartDrawerWrapper } from "@/components/cart/cart-drawer-wrapper";
 
 const geistSans = Geist({
@@ -22,17 +24,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const editorialSerif = Libre_Bodoni({
+  variable: "--font-editorial",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
     default: "Delicious Wines",
     template: "%s | Delicious Wines",
   },
-  description: "Delicious Wines Club & Shop",
+  description: "An editorial wine list with clear context.",
   openGraph: {
     type: "website",
     title: "Delicious Wines",
-    description: "Delicious Wines Club & Shop",
+    description: "An editorial wine list with clear context.",
     siteName: "Delicious Wines",
   },
   alternates: {
@@ -46,13 +53,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const adSenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+  const consent = getServerConsent();
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${editorialSerif.variable} antialiased`}
       >
-        {adSenseClient ? (
+        {adSenseClient && consent?.ads ? (
           <Script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseClient}`}
@@ -62,62 +70,34 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AnalyticsScripts />
           <AgeGate />
+          <CookieConsentBanner />
           <div className="min-h-dvh bg-background text-foreground">
-            <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+            <header className="sticky top-0 z-40 border-b border-border/70 bg-background">
               <div className="dw-container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
-                  <div className="rounded bg-black p-1">
-                    <SiteImage id="logoInverted" className="h-8 w-8" priority />
-                  </div>
+                  <SiteImage id="logoInverted" className="h-8 w-8" priority />
                   <span>Delicious Wines</span>
                 </Link>
-                <nav className="flex items-center gap-3 text-sm">
-                  <Link
-                    className="text-muted-foreground hover:text-foreground"
-                    href="/shop"
-                  >
-                    Shop
-                  </Link>
-                  <Link
-                    className="text-muted-foreground hover:text-foreground"
-                    href="/wine-club"
-                  >
-                    Club
-                  </Link>
-                  <Link
-                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
-                    href="/story"
-                  >
+                <nav className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <Link className="hover:text-foreground" href="/story">
                     Story
                   </Link>
-                  <Link
-                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
-                    href="/tastings"
-                  >
+                  <Link className="hover:text-foreground" href="/shop">
+                    Selections
+                  </Link>
+                  <Link className="hidden hover:text-foreground sm:inline" href="/wine-club">
+                    Club
+                  </Link>
+                  <Link className="hidden hover:text-foreground sm:inline" href="/tastings">
                     Tastings
                   </Link>
-                  <Link
-                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
-                    href="/contact"
-                  >
+                  <Link className="hidden hover:text-foreground sm:inline" href="/contact">
                     Contact
                   </Link>
-                  <Link
-                    className="hidden text-muted-foreground hover:text-foreground sm:inline"
-                    href="/blog"
-                  >
-                    Blog
-                  </Link>
                   <CartDrawerWrapper />
-                  <div className="hidden h-4 w-px bg-border/70 sm:block" />
-                  <div className="flex items-center gap-2">
-                    <Link
-                      className="text-muted-foreground hover:text-foreground"
-                      href="/account"
-                    >
-                      Account
-                    </Link>
-                  </div>
+                  <Link className="hidden hover:text-foreground sm:inline" href="/account">
+                    Account
+                  </Link>
                 </nav>
               </div>
             </header>

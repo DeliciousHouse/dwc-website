@@ -63,10 +63,12 @@ export const {
             image: true,
             passwordHash: true,
             isAdmin: true,
+            emailVerified: true,
           },
         });
 
         if (!user?.email || !user.passwordHash) return null;
+        if (!user.emailVerified) return null;
         const ok = await verifyPassword(password, user.passwordHash);
         if (!ok) return null;
 

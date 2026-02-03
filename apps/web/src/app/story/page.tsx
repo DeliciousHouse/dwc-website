@@ -1,5 +1,4 @@
 import { SiteImage } from "@/components/site-image";
-import { Button } from "@/ui/button";
 import Link from "next/link";
 
 export const metadata = {
@@ -11,53 +10,41 @@ export default function StoryPage() {
     <div className="flex flex-col gap-10">
       <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
         <div className="space-y-4">
-          <h1 className="dw-h1">A small club with a big taste for great bottles.</h1>
+          <h1 className="dw-h1">We keep the list small and the context clear.</h1>
           <p className="dw-lead max-w-xl">
-            Delicious Wines is built around one idea: make discovering wine feel effortless—without sacrificing quality.
-            We curate what we genuinely love, then ship it with the details you need to enjoy it.
+            Delicious Wines is a short editorial selection. We publish only what meets the standard and explain why it
+            belongs on the table.
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <Link href="/shop">Shop wines</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/wine-club">Join the club</Link>
-            </Button>
-          </div>
+          <Link className="text-sm underline underline-offset-4 hover:text-foreground" href="/shop">
+            View current selections
+          </Link>
         </div>
 
-        <div className="dw-card group overflow-hidden">
-          <div className="relative aspect-[3/4]">
-            <SiteImage
-              id="storyBarrel"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover transition duration-700 group-hover:scale-105"
-              priority
-            />
-          </div>
+        <div className="relative aspect-[3/4]">
+          <SiteImage
+            id="storyBarrel"
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+            priority
+          />
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="dw-card p-6">
-          <div className="text-sm font-semibold">Curate</div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            We choose bottles with real character—balanced, expressive, and made by people we’d love to meet.
-          </p>
-        </div>
-        <div className="dw-card p-6">
-          <div className="text-sm font-semibold">Explain</div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Tasting notes and pairing ideas that don’t feel like homework—just enough to make the next pour better.
-          </p>
-        </div>
-        <div className="dw-card p-6">
-          <div className="text-sm font-semibold">Deliver</div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Compliance-first checkout and adult signature delivery where required—because trust matters.
-          </p>
-        </div>
+      <div className="max-w-3xl space-y-4">
+        <h2 className="dw-h2">How we work</h2>
+        <ul className="space-y-3 text-sm text-muted-foreground">
+          <li>
+            <span className="font-medium text-foreground">Curate.</span> We choose bottles with balance, restraint, and a
+            clear point of view.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Explain.</span> Notes are short, specific, and meant to be used.
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Deliver.</span> Compliance first, adult signature where required.
+          </li>
+        </ul>
       </div>
     </div>
   );

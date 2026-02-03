@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getPrisma } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
+import { writeAuditLog } from "@/lib/audit";
 
 function slugify(input: string): string {
   return input
@@ -34,6 +36,7 @@ function parseIntField(value: FormDataEntryValue | null, field: string): number 
 }
 
 export async function createProductAction(formData: FormData) {
+  const session = await requireAdmin();
   const name = requireString(formData.get("name"), "name");
   const slugRaw = optionalNullableString(formData.get("slug"));
   const slug = slugRaw ? slugify(slugRaw) : slugify(name);
@@ -63,10 +66,18 @@ export async function createProductAction(formData: FormData) {
 
   revalidatePath("/shop");
   revalidatePath("/admin/products");
+  await writeAuditLog({
+    action: "admin_product_created",
+    entityType: "product",
+    entityId: created.id,
+    actorUserId: session.user.id,
+    data: { name: created.name, slug: created.slug },
+  });
   redirect(`/admin/products/${created.id}/edit`);
 }
 
 export async function updateProductAction(productId: string, formData: FormData) {
+  const session = await requireAdmin();
   const name = requireString(formData.get("name"), "name");
   const slug = slugify(requireString(formData.get("slug"), "slug"));
 
@@ -105,11 +116,25 @@ export async function updateProductAction(productId: string, formData: FormData)
   revalidatePath(`/admin/products/${productId}/edit`);
   revalidatePath(`/shop/${previous.slug}`);
   revalidatePath(`/shop/${slug}`);
+  await writeAuditLog({
+    action: "admin_product_updated",
+    entityType: "product",
+    entityId: productId,
+    actorUserId: session.user.id,
+    data: { name, slug },
+  });
 }
 
 export async function deleteProductAction(productId: string) {
+  const session = await requireAdmin();
   await getPrisma().product.delete({ where: { id: productId } });
   revalidatePath("/shop");
   revalidatePath("/admin/products");
+  await writeAuditLog({
+    action: "admin_product_deleted",
+    entityType: "product",
+    entityId: productId,
+    actorUserId: session.user.id,
+  });
 }
 

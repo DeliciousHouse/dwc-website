@@ -23,11 +23,11 @@ type ShopProductsProps = {
 export function ShopProducts({ products, search, inStockOnly }: ShopProductsProps) {
   if (products.length === 0) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center dark:border-white/10 dark:bg-black">
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">
+      <div className="border-t border-border/70 py-10 text-center">
+        <p className="text-sm text-muted-foreground">
           {search || inStockOnly
-            ? "No products match your filters. Try adjusting your search or filters."
-            : "No bottles yet — check back soon."}
+            ? "No selections match your filters. Try adjusting your search."
+            : "No selections listed yet."}
         </p>
       </div>
     );

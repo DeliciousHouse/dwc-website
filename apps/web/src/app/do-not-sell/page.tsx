@@ -7,15 +7,29 @@ export const metadata: Metadata = {
 
 export default function DoNotSellPage() {
   return (
-    <LegalPage title="Do Not Sell or Share" updated="2026-01-11">
+    <LegalPage title="Do Not Sell or Share" updated="2026-01-30">
       <p>
-        This notice is a placeholder and will be replaced with your finalized
-        legal copy.
+        Delicious Wines does not sell your personal information. We also do not
+        share personal information for cross-context behavioral advertising
+        without your consent.
       </p>
-      <h2>Your privacy choices</h2>
-      <p>We do not sell personal information. You can request updates anytime.</p>
-      <h2>Contact</h2>
-      <p>Reach out to our support team for help with privacy requests.</p>
+      <h2>Your rights</h2>
+      <p>
+        If you are a California resident, you may request access, correction,
+        or deletion of your personal information, and you may opt out of certain
+        sharing. We will verify your request as required by law.
+      </p>
+      <h2>How to opt out</h2>
+      <p>
+        You can submit a privacy request through <a href="/contact">Contact</a>.
+        Please include the email address associated with your account or order.
+      </p>
+      <h2>Authorized agents</h2>
+      <p>
+        You may designate an authorized agent to submit requests on your
+        behalf. We will require proof of authorization and identity
+        verification.
+      </p>
     </LegalPage>
   );
 }

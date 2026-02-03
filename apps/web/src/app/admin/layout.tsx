@@ -12,12 +12,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              MVP admin tools. (Auth/RBAC will lock this down in the next step.)
+              Admin tools for catalog, orders, and inventory.
             </p>
           </div>
           <nav className="flex items-center gap-3 text-sm">
             <Link className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white" href="/admin/products">
               Products
+            </Link>
+            <Link className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white" href="/admin/orders">
+              Orders
+            </Link>
+            <Link className="text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white" href="/admin/inventory">
+              Inventory
             </Link>
           </nav>
         </div>

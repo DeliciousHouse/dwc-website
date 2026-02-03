@@ -4,6 +4,7 @@ import { getCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
 import { CheckoutForm } from "@/app/checkout/checkout-form";
 import { TrustBlocks } from "@/components/checkout/trust-blocks";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,16 @@ export default async function CheckoutPage() {
     .filter((r) => r.product);
 
   const subtotalCents = rows.reduce((sum, r) => sum + r.product!.priceCents * r.item.qty, 0);
+
+  const session = await auth();
+  const userId = session?.user?.id ?? null;
+  const userEmail = session?.user?.email ?? null;
+  const addresses = userId
+    ? await getPrisma().address.findMany({
+        where: { userId },
+        orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
+      })
+    : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -62,7 +73,7 @@ export default async function CheckoutPage() {
           </div>
         </div>
 
-        <CheckoutForm />
+        <CheckoutForm addresses={addresses} userEmail={userEmail} />
       </div>
 
       <div className="mt-6">

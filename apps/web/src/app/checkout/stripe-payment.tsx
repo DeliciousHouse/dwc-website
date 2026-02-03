@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { createPaymentIntentAction } from "@/app/checkout/stripe-actions";
+import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "@/ui/button";
+import { useState } from "react";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "";
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
@@ -14,19 +13,11 @@ function InnerPaymentForm({ returnUrl }: { returnUrl: string }) {
   const elements = useElements();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [age, setAge] = useState(false);
-  const [sig, setSig] = useState(false);
-
-  const canPay = age && sig;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!stripe || !elements) return;
-    if (!canPay) {
-      setError("Please confirm you are 21+ and acknowledge the adult signature requirement.");
-      return;
-    }
 
     setPending(true);
     try {
@@ -45,10 +36,7 @@ function InnerPaymentForm({ returnUrl }: { returnUrl: string }) {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="dw-card flex flex-col gap-4 p-6"
-    >
+    <form onSubmit={onSubmit} className="dw-card flex flex-col gap-4 p-6">
       <div className="text-sm font-medium">Payment</div>
       <div className="text-sm text-muted-foreground">
         Apple Pay and Google Pay will appear automatically when available on your device.
@@ -64,17 +52,6 @@ function InnerPaymentForm({ returnUrl }: { returnUrl: string }) {
         }}
       />
 
-      <div className="flex flex-col gap-2 pt-2">
-        <label className="flex items-start gap-2 text-sm">
-          <input checked={age} onChange={(e) => setAge(e.target.checked)} type="checkbox" className="mt-1 size-4" /> I
-          affirm I am at least 21 years old.
-        </label>
-        <label className="flex items-start gap-2 text-sm">
-          <input checked={sig} onChange={(e) => setSig(e.target.checked)} type="checkbox" className="mt-1 size-4" /> I
-          acknowledge an adult signature will be required at delivery.
-        </label>
-      </div>
-
       {error ? (
         <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
           {error}
@@ -88,57 +65,16 @@ function InnerPaymentForm({ returnUrl }: { returnUrl: string }) {
   );
 }
 
-export function StripePayment() {
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  // Use the browser URL to construct return_url at runtime (works in dev/prod).
-  const returnUrl = useMemo(() => {
-    if (typeof window === "undefined") return "";
-    return `${window.location.origin}/checkout/success`;
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function run() {
-      setError(null);
-
-      if (!stripePromise) {
-        setError("Stripe is not configured (missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
-        return;
-      }
-
-      const res = await createPaymentIntentAction();
-      if (cancelled) return;
-      if (!res.ok) {
-        setError(res.error);
-        return;
-      }
-      setClientSecret(res.clientSecret);
-    }
-
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (error) {
+export function StripePayment({ clientSecret, returnUrl }: { clientSecret: string; returnUrl: string }) {
+  if (!stripePromise) {
     return (
       <div className="dw-card p-6 text-sm text-muted-foreground">
         <div className="font-medium text-foreground">Payment unavailable</div>
-        <div className="mt-2">{error}</div>
+        <div className="mt-2">Stripe is not configured (missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).</div>
         <div className="mt-2 text-xs text-muted-foreground">
           Add Stripe keys to `.env` and restart `docker compose up`.
         </div>
       </div>
-    );
-  }
-
-  if (!stripePromise || !clientSecret) {
-    return (
-      <div className="dw-card p-6 text-sm text-muted-foreground">Loading payment…</div>
     );
   }
 

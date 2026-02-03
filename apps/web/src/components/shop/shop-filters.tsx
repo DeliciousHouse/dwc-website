@@ -1,6 +1,5 @@
 "use client";
 
-import { Search, X } from "lucide-react";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import {
@@ -37,27 +36,16 @@ export function ShopFilters({
   onClearAll,
 }: ShopFiltersProps) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-black">
+    <div className="rounded-xl border border-border/70 bg-card p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+        <div className="flex-1 sm:max-w-md">
           <Input
             type="search"
-            placeholder="Search by name or tasting notes…"
+            placeholder="Search by name or notes"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9 pr-9"
             aria-label="Search products"
           />
-          {search && (
-            <button
-              onClick={() => onSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-              aria-label="Clear search"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
@@ -84,20 +72,18 @@ export function ShopFilters({
           </Select>
 
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={onClearAll}>
-              Clear
+            <Button variant="ghost" size="sm" onClick={onClearAll} className="text-muted-foreground">
+              Clear filters
             </Button>
           )}
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
+      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
-          {resultCount} of {totalCount} bottles
+          {resultCount} of {totalCount} selections
         </span>
-        {hasActiveFilters && (
-          <span className="text-zinc-500 dark:text-zinc-500">Filters active</span>
-        )}
+        {hasActiveFilters && <span>Filters active</span>}
       </div>
     </div>
   );

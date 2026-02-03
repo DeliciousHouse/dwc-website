@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import { formatMoneyFromCents } from "@/lib/money";
 import { Button } from "@/ui/button";
 import { addToCartAction } from "@/app/shop/actions";
@@ -48,57 +47,45 @@ export function ProductCard({
   }
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-zinc-300 hover:shadow-lg dark:border-white/10 dark:bg-black dark:hover:border-white/20">
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card">
       <Link href={`/shop/${slug}`} className="flex flex-col flex-1">
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
           {imageUrl ? (
             <AppImage
               src={imageUrl}
               alt={name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="transition-transform duration-300 group-hover:scale-[1.04]"
+              className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-600">
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <div className="text-center">
-                <div className="text-4xl mb-2">🍷</div>
-                <div className="text-xs">No image</div>
+                <div className="text-xs">Image pending</div>
               </div>
             </div>
           )}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-
           {!canAdd && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-zinc-900">
-                Out of Stock
-              </span>
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+              <span className="text-xs font-medium text-foreground">Out of stock</span>
             </div>
           )}
         </div>
         <div className="flex flex-1 flex-col p-4">
           <div className="mb-2 flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 font-semibold leading-tight group-hover:underline group-hover:underline-offset-4">
+            <h3 className="line-clamp-2 font-semibold leading-tight">
               {name}
             </h3>
-            <div
-              className={[
-                "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium",
-                canAdd
-                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200"
-                  : "bg-zinc-100 text-zinc-700 dark:bg-white/10 dark:text-zinc-200",
-              ].join(" ")}
-            >
-              {canAdd ? `${inventoryOnHand} in stock` : "Out of stock"}
+            <div className="shrink-0 text-xs text-muted-foreground">
+              {canAdd ? `${inventoryOnHand} available` : "Unavailable"}
             </div>
           </div>
-          <div className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="mb-2 text-lg font-semibold text-foreground">
             {formatMoneyFromCents(priceCents, currency)}
           </div>
           {description && (
-            <p className="line-clamp-2 flex-1 text-sm text-zinc-600 dark:text-zinc-300">{description}</p>
+            <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
       </Link>
@@ -116,10 +103,7 @@ export function ProductCard({
               Adding...
             </>
           ) : (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Quick add
-            </>
+            "Add to cart"
           )}
         </Button>
       </div>

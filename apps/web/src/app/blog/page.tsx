@@ -5,8 +5,8 @@ import { AdSlot } from "@/components/ad-slot";
 import { posts } from "./posts";
 
 export const metadata = {
-  title: "Blog",
-  description: "Notes, pairings, producers, and what we’re loving right now.",
+  title: "Journal",
+  description: "Notes on producers, tables, and the people behind them.",
 };
 
 export default function BlogPage() {
@@ -17,17 +17,17 @@ export default function BlogPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       <div>
-        <h1 className="dw-h1">The Blog</h1>
+        <h1 className="dw-h1">Journal</h1>
         <p className="dw-lead mt-2 max-w-2xl">
-          Notes, pairings, producers, and what we’re loving right now.
+          Notes on producers, tables, and the people behind them.
         </p>
       </div>
 
       <div className="grid gap-6">
         {posts.map((p, index) => (
-          <div key={p.slug} className="dw-card p-5">
+          <div key={p.slug} className="border-t border-border/70 pt-5">
             <div className="text-xs text-muted-foreground">{p.date}</div>
             <div className="mt-1 text-lg font-semibold">{p.title}</div>
             <div className="mt-2 text-sm text-muted-foreground">{p.excerpt}</div>

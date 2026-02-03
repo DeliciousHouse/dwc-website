@@ -78,22 +78,20 @@ export default function BlogPostPage({ params }: PageProps) {
         <p className="dw-lead mt-3 max-w-2xl">{post.excerpt}</p>
       </div>
 
-      <div className="dw-card p-6">
-        <div className="space-y-4 text-sm text-muted-foreground">
-          {post.content.map((paragraph, index) => (
-            <Fragment key={paragraph}>
-              <p>{paragraph}</p>
-              {index === 0 ? (
-                <AdSlot
-                  className="my-2"
-                  slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_POST}
-                  minHeightClassName="min-h-[180px]"
-                  label="Blog post advertisement"
-                />
-              ) : null}
-            </Fragment>
-          ))}
-        </div>
+      <div className="space-y-4 text-sm text-muted-foreground">
+        {post.content.map((paragraph, index) => (
+          <Fragment key={paragraph}>
+            <p>{paragraph}</p>
+            {index === 0 ? (
+              <AdSlot
+                className="my-4 border-t border-border/70 pt-4"
+                slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_POST}
+                minHeightClassName="min-h-[180px]"
+                label="Blog post advertisement"
+              />
+            ) : null}
+          </Fragment>
+        ))}
       </div>
     </div>
   );

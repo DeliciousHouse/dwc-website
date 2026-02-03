@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
+import { getClientConsent } from "@/lib/consent-client";
 
 type AdSlotProps = {
   slot?: string;
@@ -25,9 +26,11 @@ export function AdSlot({
 }: AdSlotProps) {
   const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "";
   const didPush = useRef(false);
+  const consent = getClientConsent();
 
   useEffect(() => {
     if (!adClient || !slot || didPush.current) return;
+    if (!consent?.ads) return;
     didPush.current = true;
     try {
       window.adsbygoogle = window.adsbygoogle || [];
@@ -44,7 +47,7 @@ export function AdSlot({
         className,
       )}
     >
-      {adClient && slot ? (
+      {adClient && slot && consent?.ads ? (
         <ins
           className={cn("adsbygoogle block w-full", minHeightClassName)}
           data-ad-client={adClient}
@@ -55,7 +58,7 @@ export function AdSlot({
         />
       ) : (
         <div>
-          Advertisement slot (set `NEXT_PUBLIC_ADSENSE_CLIENT` and slot envs)
+          Advertisement disabled until consent is provided.
         </div>
       )}
     </div>

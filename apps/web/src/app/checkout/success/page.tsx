@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { clearCart } from "@/lib/cart";
 
-export default function CheckoutSuccessPage() {
+export default async function CheckoutSuccessPage() {
+  await clearCart();
   return (
     <div className="flex flex-col gap-4">
       <h1 className="dw-h1">Compliance acknowledged</h1>
