@@ -7,6 +7,10 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 
+export const metadata = {
+  title: "Create Account",
+};
+
 const initialState = { ok: false, message: "", error: "" };
 
 function SubmitButton() {
