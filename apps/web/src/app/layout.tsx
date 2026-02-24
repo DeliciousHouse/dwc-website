@@ -47,13 +47,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const adSenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
-  const consent = getServerConsent();
+  const consent = await getServerConsent();
 
   return (
     <html lang="en" suppressHydrationWarning>
