@@ -1,8 +1,8 @@
 import Script from "next/script";
 import { getServerConsent } from "@/lib/consent-server";
 
-export function AnalyticsScripts() {
-  const consent = getServerConsent();
+export async function AnalyticsScripts() {
+  const consent = await getServerConsent();
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   if (!consent?.analytics || !gaId) return null;
