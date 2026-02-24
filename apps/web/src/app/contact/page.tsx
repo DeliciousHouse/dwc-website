@@ -7,6 +7,10 @@ import { Label } from "@/ui/label";
 import { useFormState, useFormStatus } from "react-dom";
 import { contactAction } from "./actions";
 
+export const metadata = {
+  title: "Contact",
+};
+
 const initialState = { ok: false, message: "", error: "" };
 
 function SubmitButton() {
