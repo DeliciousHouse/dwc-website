@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PaymentAdapter } from "@/lib/payments/payment-adapter";
 import { createCheckoutPostHandler } from "./route";
 
@@ -33,6 +33,10 @@ function mockPaymentAdapter(): PaymentAdapter {
 }
 
 describe("POST /api/checkout", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("fails soft with a clean opening-soon response when Square credentials are absent", async () => {
     const startCheckout = vi.fn();
     const handler = createCheckoutPostHandler({
@@ -50,7 +54,8 @@ describe("POST /api/checkout", () => {
     expect(startCheckout).not.toHaveBeenCalled();
   });
 
-  it("starts a credentialed sandbox checkout through the mocked adapter", async () => {
+  it("starts a credentialed sandbox checkout with the canonical return base", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://canonical.wine.example/");
     const adapter = mockPaymentAdapter();
     const startCheckout = vi.fn().mockResolvedValue({
       ok: true,
@@ -72,7 +77,7 @@ describe("POST /api/checkout", () => {
     expect(startCheckout).toHaveBeenCalledWith({
       adapter,
       checkout: validCheckout,
-      returnBaseUrl: "https://wine.example",
+      returnBaseUrl: "https://canonical.wine.example",
     });
   });
 

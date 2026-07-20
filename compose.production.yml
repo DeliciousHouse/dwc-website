@@ -92,6 +92,9 @@ services:
       APPLE_CLIENT_SECRET: ${APPLE_CLIENT_SECRET:-}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_FROM: ${RESEND_FROM:-}
+      SQUARE_ACCESS_TOKEN: ${SQUARE_ACCESS_TOKEN:-}
+      SQUARE_ENVIRONMENT: ${SQUARE_ENVIRONMENT:-}
+      SQUARE_LOCATION_ID: ${SQUARE_LOCATION_ID:-}
     ports:
       - "${WEB_BIND_ADDRESS:-0.0.0.0}:${WEB_PORT:?Set WEB_PORT in the production env file}:3010"
     read_only: true

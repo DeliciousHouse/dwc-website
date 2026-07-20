@@ -4,6 +4,7 @@ import type {
   CheckoutSubmission,
   StartCheckout,
 } from "@/lib/checkout/start-checkout";
+import { getSiteUrl } from "@/lib/site";
 
 export const runtime = "nodejs";
 
@@ -82,7 +83,7 @@ export function createCheckoutPostHandler(deps: CheckoutPostDependencies) {
     const result = await deps.startCheckout({
       adapter,
       checkout: parsed.checkout,
-      returnBaseUrl: new URL(request.url).origin,
+      returnBaseUrl: getSiteUrl(),
     });
     if (!result.ok) {
       return jsonError(400, "checkout_failed", result.error);

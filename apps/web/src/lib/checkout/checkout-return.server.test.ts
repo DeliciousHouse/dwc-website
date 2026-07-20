@@ -8,6 +8,10 @@ function transactionClient() {
   return {
     order: {
       updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      findUnique: vi.fn().mockResolvedValue({
+        status: "paid",
+        paymentStatus: "completed",
+      }),
     },
     inventoryReservation: {
       findMany: vi.fn().mockResolvedValue([{
@@ -60,10 +64,10 @@ describe("checkout return persistence", () => {
     const writeAuditLog = vi.fn().mockResolvedValue(undefined);
     const store = createCheckoutReturnStore({ prisma, writeAuditLog });
 
-    await store.recordPaymentResult({
+    await expect(store.recordPaymentResult({
       orderId: "local_order_123",
       status: "completed",
-    });
+    })).resolves.toBe("paid");
 
     expect(tx.inventoryReservation.findMany).toHaveBeenCalledWith({
       where: { orderId: "local_order_123", status: "reserved" },
@@ -87,7 +91,7 @@ describe("checkout return persistence", () => {
     }));
   });
 
-  it("does not decrement inventory when an order is already paid", async () => {
+  it("confirms an order that is already locally paid", async () => {
     const tx = transactionClient();
     tx.order.updateMany.mockResolvedValue({ count: 0 });
     const prisma: CheckoutPrisma = {
@@ -102,13 +106,82 @@ describe("checkout return persistence", () => {
       writeAuditLog: vi.fn().mockResolvedValue(undefined),
     });
 
-    await store.recordPaymentResult({
+    await expect(store.recordPaymentResult({
       orderId: "local_order_123",
       status: "completed",
-    });
+    })).resolves.toBe("paid");
 
     expect(tx.product.update).not.toHaveBeenCalled();
     expect(tx.inventoryReservation.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("persists a recoverable conflict when Square completes after expiry released stock", async () => {
+    const tx = transactionClient();
+    tx.order.updateMany
+      .mockResolvedValueOnce({ count: 0 })
+      .mockResolvedValueOnce({ count: 1 });
+    tx.order.findUnique.mockResolvedValue({
+      status: "cancelled",
+      paymentStatus: "expired",
+    });
+    const prisma: CheckoutPrisma = {
+      order: {
+        findUnique: vi.fn(),
+        updateMany: vi.fn(),
+      },
+      $transaction: async (callback) => callback(tx),
+    };
+    const writeAuditLog = vi.fn().mockResolvedValue(undefined);
+    const store = createCheckoutReturnStore({ prisma, writeAuditLog });
+
+    await expect(store.recordPaymentResult({
+      orderId: "local_order_123",
+      status: "completed",
+    })).resolves.toBe("inventory_conflict");
+
+    expect(tx.order.updateMany).toHaveBeenNthCalledWith(2, {
+      where: {
+        id: "local_order_123",
+        paymentProvider: "square",
+        status: "cancelled",
+      },
+      data: { paymentStatus: "completed_inventory_conflict" },
+    });
+    expect(tx.inventoryReservation.findMany).not.toHaveBeenCalled();
+    expect(tx.inventoryReservation.updateMany).not.toHaveBeenCalled();
+    expect(writeAuditLog).toHaveBeenCalledWith(expect.objectContaining({
+      action: "checkout_payment_inventory_conflict",
+      entityId: "local_order_123",
+    }));
+  });
+
+  it("never downgrades a verified completion conflict to cancelled", async () => {
+    const tx = transactionClient();
+    tx.order.updateMany.mockResolvedValue({ count: 0 });
+    const updateMany = vi.fn().mockResolvedValue({ count: 1 });
+    const prisma: CheckoutPrisma = {
+      order: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: "local_order_123",
+          paymentProviderOrderId: "square_order_123",
+          status: "cancelled",
+          paymentStatus: "completed_inventory_conflict",
+        }),
+        updateMany,
+      },
+      $transaction: async (callback) => callback(tx),
+    };
+    const store = createCheckoutReturnStore({
+      prisma,
+      writeAuditLog: vi.fn().mockResolvedValue(undefined),
+    });
+
+    await expect(store.recordPaymentResult({
+      orderId: "local_order_123",
+      status: "cancelled",
+    })).resolves.toBe("inventory_conflict");
+
+    expect(updateMany).not.toHaveBeenCalled();
   });
 
   it("provider-scopes cancellation and restores claimed inventory once", async () => {
@@ -123,10 +196,10 @@ describe("checkout return persistence", () => {
     const writeAuditLog = vi.fn().mockResolvedValue(undefined);
     const store = createCheckoutReturnStore({ prisma, writeAuditLog });
 
-    await store.recordPaymentResult({
+    await expect(store.recordPaymentResult({
       orderId: "local_order_123",
       status: "cancelled",
-    });
+    })).resolves.toBe("cancelled");
 
     expect(tx.order.updateMany).toHaveBeenCalledWith({
       where: {

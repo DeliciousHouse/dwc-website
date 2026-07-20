@@ -3,10 +3,16 @@ import { formatMoney } from "@/lib/money";
 import { updateOrderStatusAction } from "./actions";
 import { Button } from "@/ui/button";
 import Link from "next/link";
+import { getPaymentReconciliationNotice } from "@/lib/checkout/payment-reconciliation";
 
 export const dynamic = "force-dynamic";
 
 const STATUS_OPTIONS = ["pending", "paid", "fulfilled", "cancelled", "refunded"] as const;
+
+function PaymentReconciliationNotice({ paymentStatus }: { paymentStatus: string | null }) {
+  const notice = getPaymentReconciliationNotice(paymentStatus);
+  return notice ? <div className="mt-1 text-xs font-medium text-red-700 dark:text-red-300">{notice}</div> : null;
+}
 
 export default async function AdminOrdersPage() {
   const orders = await getPrisma().order.findMany({
@@ -45,6 +51,7 @@ export default async function AdminOrdersPage() {
                       {order.items.length} item{order.items.length === 1 ? "" : "s"} ·{" "}
                       {formatMoney(order.totalCents, order.currency)}
                     </div>
+                    <PaymentReconciliationNotice paymentStatus={order.paymentStatus} />
                   </div>
                   <form action={updateOrderStatusAction} className="flex items-center gap-2">
                     <input type="hidden" name="orderId" value={order.id} />

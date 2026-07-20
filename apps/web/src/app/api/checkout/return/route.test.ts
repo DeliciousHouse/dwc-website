@@ -11,10 +11,12 @@ function adapter(status: "completed" | "open" | "cancelled" | "unknown"): Paymen
   };
 }
 
+const getSiteUrl = () => "https://wine.example";
+
 describe("GET /api/checkout/return", () => {
   it("verifies a completed Square order and records payment before redirecting", async () => {
     const paymentAdapter = adapter("completed");
-    const recordPaymentResult = vi.fn().mockResolvedValue(undefined);
+    const recordPaymentResult = vi.fn().mockResolvedValue("paid");
     const handler = createCheckoutReturnHandler({
       createPaymentAdapter: () => paymentAdapter,
       findOrder: vi.fn().mockResolvedValue({
@@ -22,6 +24,7 @@ describe("GET /api/checkout/return", () => {
         providerOrderId: "square_order_123",
       }),
       recordPaymentResult,
+      getSiteUrl,
     });
 
     const response = await handler(new Request(
@@ -40,7 +43,7 @@ describe("GET /api/checkout/return", () => {
   });
 
   it("records an open Square order as pending without clearing the cart", async () => {
-    const recordPaymentResult = vi.fn().mockResolvedValue(undefined);
+    const recordPaymentResult = vi.fn().mockResolvedValue("pending");
     const handler = createCheckoutReturnHandler({
       createPaymentAdapter: () => adapter("open"),
       findOrder: vi.fn().mockResolvedValue({
@@ -48,6 +51,7 @@ describe("GET /api/checkout/return", () => {
         providerOrderId: "square_order_123",
       }),
       recordPaymentResult,
+      getSiteUrl,
     });
 
     const response = await handler(new Request(
@@ -69,6 +73,7 @@ describe("GET /api/checkout/return", () => {
       createPaymentAdapter: () => paymentAdapter,
       findOrder: vi.fn().mockResolvedValue(null),
       recordPaymentResult,
+      getSiteUrl,
     });
 
     const response = await handler(new Request(
@@ -78,5 +83,47 @@ describe("GET /api/checkout/return", () => {
     expect(paymentAdapter.getOrderStatus).not.toHaveBeenCalled();
     expect(recordPaymentResult).not.toHaveBeenCalled();
     expect(response.headers.get("location")).toBe("https://wine.example/checkout/success?status=unverified");
+  });
+
+  it("does not report paid when local persistence detects released inventory", async () => {
+    const recordPaymentResult = vi.fn().mockResolvedValue("inventory_conflict");
+    const handler = createCheckoutReturnHandler({
+      createPaymentAdapter: () => adapter("completed"),
+      findOrder: vi.fn().mockResolvedValue({
+        id: "local_order_123",
+        providerOrderId: "square_order_123",
+      }),
+      recordPaymentResult,
+      getSiteUrl,
+    });
+
+    const response = await handler(new Request(
+      "https://wine.example/api/checkout/return?orderId=local_order_123",
+    ));
+
+    expect(response.headers.get("location")).toBe(
+      "https://wine.example/checkout/success?status=payment-review",
+    );
+    expect(response.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("redirects to the canonical site instead of a reflected request host", async () => {
+    const handler = createCheckoutReturnHandler({
+      createPaymentAdapter: () => adapter("open"),
+      findOrder: vi.fn().mockResolvedValue({
+        id: "local_order_123",
+        providerOrderId: "square_order_123",
+      }),
+      recordPaymentResult: vi.fn().mockResolvedValue("pending"),
+      getSiteUrl: () => "https://canonical.example",
+    });
+
+    const response = await handler(new Request(
+      "https://attacker.example/api/checkout/return?orderId=local_order_123",
+    ));
+
+    expect(response.headers.get("location")).toBe(
+      "https://canonical.example/checkout/success?status=pending",
+    );
   });
 });

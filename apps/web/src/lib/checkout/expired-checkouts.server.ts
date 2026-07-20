@@ -2,6 +2,7 @@ import type {
   PaymentAdapter,
   PaymentOrderStatus,
 } from "@/lib/payments/payment-adapter";
+import type { PaymentPersistenceOutcome } from "./checkout-return.server";
 
 const EXPIRED_CHECKOUT_BATCH_SIZE = 25;
 
@@ -9,8 +10,10 @@ export type ExpiredCheckoutPrisma = {
   order: {
     findMany(args: unknown): Promise<Array<{
       id: string;
+      status: "pending" | "cancelled";
       paymentProviderOrderId: string | null;
       paymentLinkId: string | null;
+      paymentStatus: string | null;
     }>>;
   };
 };
@@ -18,7 +21,7 @@ export type ExpiredCheckoutPrisma = {
 type RecordPaymentResult = (input: {
   orderId: string;
   status: PaymentOrderStatus;
-}) => Promise<void>;
+}) => Promise<PaymentPersistenceOutcome>;
 
 type CancelOrder = (input: {
   orderId: string;
@@ -44,23 +47,39 @@ export async function reconcileExpiredCheckoutOrders({
 }): Promise<void> {
   const orders = await prisma.order.findMany({
     where: {
-      status: "pending",
-      reservations: {
-        some: { status: "reserved", expiresAt: { lte: now } },
-      },
-      OR: [{ paymentProvider: null }, { paymentProvider: adapter.provider }],
+      OR: [{
+        status: "pending",
+        reservations: {
+          some: { status: "reserved", expiresAt: { lte: now } },
+        },
+        OR: [{ paymentProvider: null }, { paymentProvider: adapter.provider }],
+      }, {
+        status: "cancelled",
+        paymentProvider: adapter.provider,
+        paymentStatus: "expired",
+        paymentProviderOrderId: { not: null },
+      }],
     },
     select: {
       id: true,
+      status: true,
       paymentProviderOrderId: true,
       paymentLinkId: true,
+      paymentStatus: true,
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { updatedAt: "asc" },
     take: EXPIRED_CHECKOUT_BATCH_SIZE,
   });
 
   for (const order of orders) {
     try {
+      if (order.status === "cancelled") {
+        if (!order.paymentProviderOrderId) continue;
+        const status = await adapter.getOrderStatus(order.paymentProviderOrderId);
+        await recordPaymentResult({ orderId: order.id, status });
+        continue;
+      }
+
       if (!order.paymentProviderOrderId || !order.paymentLinkId) {
         await cancelOrder({ orderId: order.id, paymentStatus: "expired" });
         continue;
@@ -80,8 +99,10 @@ export async function reconcileExpiredCheckoutOrders({
       }
 
       await cancelOrder({ orderId: order.id, paymentStatus: "expired" });
+      status = await adapter.getOrderStatus(order.paymentProviderOrderId);
+      await recordPaymentResult({ orderId: order.id, status });
     } catch {
-      // Leave the claim in place when Square cannot confirm the checkout is safe to expire.
+      // Keep pending claims guarded; expired orders remain eligible for a later reconciliation pass.
     }
   }
 }
