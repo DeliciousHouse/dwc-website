@@ -7,10 +7,6 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 
-export const metadata = {
-  title: "Forgot Password",
-};
-
 const initialState = { ok: false, message: "", error: "" };
 
 function SubmitButton() {

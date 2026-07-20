@@ -30,6 +30,8 @@ export function CookieConsentBanner() {
   const [ads, setAds] = useState(true);
 
   useEffect(() => {
+    // Consent is stored in a browser-only cookie, so read it after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(!getExistingConsent());
   }, []);
 
