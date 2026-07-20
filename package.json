@@ -10,9 +10,10 @@
     "dev": "pnpm -C apps/web dev",
     "assets:sync": "tsx scripts/sync-assets.ts",
     "assets:check": "tsx scripts/check-assets.ts",
-    "build": "npm i --save-dev prisma@latest && npm i @prisma/client@latest && pnpm assets:check && pnpm -C apps/web build",
+    "build": "pnpm assets:check && pnpm build:ci",
     "build:ci": "pnpm -C packages/shared build && pnpm -C apps/web exec prisma generate && pnpm -C apps/web exec next build",
     "start": "pnpm -C apps/web start",
+    "test": "pnpm test:ci && pnpm -C apps/web test",
     "lint": "pnpm -C apps/web lint",
     "lint:changed": "node scripts/ci/lint-changed.mjs",
     "test:ci": "node --test tests/ci/*.test.mjs",
@@ -30,5 +31,5 @@
     "sharp": "^0.34.5",
     "tsx": "^4.21.0"
   },
-  "version": "0.0.1.0"
+  "version": "0.1.0.0"
 }

@@ -177,7 +177,10 @@ model Order {
   totalCents             Int          @default(0)
   currency               String       @default("USD")
 
-  stripePaymentIntentId  String?      @unique
+  paymentProvider        String?
+  paymentProviderOrderId String?      @unique
+  paymentLinkId          String?      @unique
+  paymentStatus          String?
 
   shippingState          String?
   shippingAddressSnapshot Json?
@@ -234,8 +237,9 @@ model Subscription {
   clubPlanId           String
   status               SubscriptionStatus @default(active)
 
-  stripeCustomerId     String?
-  stripeSubscriptionId String?            @unique
+  paymentProvider       String?
+  paymentCustomerId     String?
+  paymentSubscriptionId String?            @unique
 
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
@@ -318,11 +322,13 @@ model InventoryReservation {
   clubShipment   ClubShipment?             @relation(fields: [clubShipmentId], references: [id], onDelete: Cascade)
 
   createdAt      DateTime                  @default(now())
+  expiresAt      DateTime?
 
   @@index([productId])
   @@index([orderId])
   @@index([clubShipmentId])
   @@index([status])
+  @@index([status, expiresAt])
 }
 
 model AuditLog {

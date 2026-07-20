@@ -46,8 +46,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test the CI contract and fail-closed lint detector
-        run: pnpm test:ci
+      - name: Test
+        run: pnpm test
 
       - name: Check asset integrity
         run: pnpm assets:check

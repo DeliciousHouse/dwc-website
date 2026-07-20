@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { StripePayment } from "@/app/checkout/stripe-payment";
+import { useState } from "react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
-import { createOrderAndPaymentIntentAction } from "@/app/checkout/actions";
 import { US_STATES } from "@/app/checkout/us-states";
 
 type AddressSummary = {
@@ -22,11 +20,15 @@ type AddressSummary = {
 };
 
 type CheckoutState = {
-  clientSecret: string | null;
-  orderId: string | null;
   error: string | null;
   pending: boolean;
 };
+
+function responseRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
 
 export function CheckoutForm({
   addresses,
@@ -36,8 +38,6 @@ export function CheckoutForm({
   userEmail: string | null;
 }) {
   const [state, setState] = useState<CheckoutState>({
-    clientSecret: null,
-    orderId: null,
     error: null,
     pending: false,
   });
@@ -54,13 +54,7 @@ export function CheckoutForm({
     shippingPostal: defaultAddress?.postalCode ?? "",
   });
 
-  // Use the browser URL to construct return_url at runtime (works in dev/prod).
-  const returnUrl = useMemo(() => {
-    if (typeof window === "undefined") return "";
-    return `${window.location.origin}/checkout/success`;
-  }, []);
-
-  const locked = Boolean(state.clientSecret);
+  const locked = state.pending;
 
   function updateValue(field: keyof typeof formValues, value: string) {
     setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -83,20 +77,41 @@ export function CheckoutForm({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (locked || state.pending) return;
+    if (state.pending) return;
     setState((prev) => ({ ...prev, error: null, pending: true }));
     const formData = new FormData(e.currentTarget);
-    const res = await createOrderAndPaymentIntentAction(formData);
-    if (!res.ok) {
-      setState((prev) => ({ ...prev, error: res.error, pending: false }));
-      return;
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: String(formData.get("email") ?? ""),
+          shippingName: String(formData.get("shippingName") ?? ""),
+          shippingPhone: String(formData.get("shippingPhone") ?? ""),
+          shippingLine1: String(formData.get("shippingLine1") ?? ""),
+          shippingLine2: String(formData.get("shippingLine2") ?? ""),
+          shippingCity: String(formData.get("shippingCity") ?? ""),
+          shippingState: String(formData.get("shippingState") ?? ""),
+          shippingPostal: String(formData.get("shippingPostal") ?? ""),
+          ageAffirmed: formData.has("ageAffirmed"),
+          adultSignatureDisclosure: formData.has("adultSignatureDisclosure"),
+        }),
+      });
+      const result = responseRecord(await response.json());
+      if (!response.ok || typeof result.paymentUrl !== "string") {
+        const error = typeof result.error === "string"
+          ? result.error
+          : "Unable to start checkout. Please try again.";
+        setState({ error, pending: false });
+        return;
+      }
+      window.location.assign(result.paymentUrl);
+    } catch {
+      setState({
+        error: "Unable to start checkout. Please try again.",
+        pending: false,
+      });
     }
-    setState({
-      clientSecret: res.clientSecret,
-      orderId: res.orderId,
-      error: null,
-      pending: false,
-    });
   }
 
   return (
@@ -265,17 +280,13 @@ export function CheckoutForm({
         ) : null}
 
         <Button type="submit" disabled={locked || state.pending}>
-          {state.pending ? "Starting checkout…" : "Continue to payment"}
+          {state.pending ? "Opening secure checkout…" : "Continue to secure payment"}
         </Button>
       </form>
 
-      {state.clientSecret ? (
-        <StripePayment clientSecret={state.clientSecret} returnUrl={returnUrl} />
-      ) : (
-        <div className="dw-card p-6 text-sm text-muted-foreground">
-          Enter your email and shipping address to load payment options.
-        </div>
-      )}
+      <div className="dw-card p-6 text-sm text-muted-foreground">
+        After confirming your details, you’ll continue to Square’s secure hosted checkout to pay.
+      </div>
     </div>
   );
 }

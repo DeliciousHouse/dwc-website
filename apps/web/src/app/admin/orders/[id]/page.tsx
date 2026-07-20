@@ -46,8 +46,11 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
             Total: <span className="font-medium text-foreground">{formatMoney(order.totalCents, order.currency)}</span>
           </div>
           <div className="text-zinc-600 dark:text-zinc-300">
-            Payment intent:{" "}
-            <span className="font-medium text-foreground">{order.stripePaymentIntentId ?? "n/a"}</span>
+            Provider: <span className="font-medium text-foreground">{order.paymentProvider ?? "n/a"}</span>
+          </div>
+          <div className="text-zinc-600 dark:text-zinc-300">
+            Provider order:{" "}
+            <span className="font-medium text-foreground">{order.paymentProviderOrderId ?? "n/a"}</span>
           </div>
         </div>
 

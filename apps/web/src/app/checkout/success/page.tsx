@@ -1,14 +1,38 @@
 import Link from "next/link";
-import { clearCart } from "@/lib/cart";
 
-export default async function CheckoutSuccessPage() {
-  await clearCart();
+const messages = {
+  paid: {
+    title: "Payment confirmed",
+    body: "Thanks — Square confirmed your payment and your order is now being prepared.",
+  },
+  pending: {
+    title: "Payment processing",
+    body: "Square has not completed this payment yet. Your cart is still available while we wait for confirmation.",
+  },
+  cancelled: {
+    title: "Checkout cancelled",
+    body: "No completed payment was recorded. Your cart is still available if you’d like to try again.",
+  },
+  unverified: {
+    title: "Payment not verified",
+    body: "We could not verify a completed Square payment. Your cart has not been cleared.",
+  },
+} as const;
+
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const status = (await searchParams).status;
+  const message = status && status in messages
+    ? messages[status as keyof typeof messages]
+    : messages.unverified;
+
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="dw-h1">Compliance acknowledged</h1>
-      <p className="dw-lead">
-        Thanks — your compliance acknowledgments were recorded and your cart has been cleared.
-      </p>
+      <h1 className="dw-h1">{message.title}</h1>
+      <p className="dw-lead">{message.body}</p>
       <div className="flex gap-3">
         <Link className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground" href="/shop">
           Back to shop

@@ -5,10 +5,12 @@ import { formatMoney } from "@/lib/money";
 import { CheckoutForm } from "@/app/checkout/checkout-form";
 import { TrustBlocks } from "@/components/checkout/trust-blocks";
 import { auth } from "@/auth";
+import { readSquareConfig } from "@/lib/payments/square-payment-adapter";
 
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage() {
+  const checkoutAvailable = readSquareConfig() !== null;
   const cart = await getCart();
   const products = cart.items.length
     ? await getPrisma().product.findMany({ where: { id: { in: cart.items.map((i) => i.productId) } } })
@@ -37,7 +39,7 @@ export default async function CheckoutPage() {
         <div>
           <h1 className="dw-h1">Checkout</h1>
           <p className="dw-lead">
-            Pay fast with Apple Pay / Google Pay (when available), plus required compliance acknowledgments.
+            Confirm delivery details, then continue to Square’s secure hosted checkout.
           </p>
         </div>
         <Link className="text-sm underline underline-offset-4 hover:text-foreground" href="/cart">
@@ -73,7 +75,19 @@ export default async function CheckoutPage() {
           </div>
         </div>
 
-        <CheckoutForm addresses={addresses} userEmail={userEmail} />
+        {checkoutAvailable ? (
+          <CheckoutForm addresses={addresses} userEmail={userEmail} />
+        ) : (
+          <div className="dw-card flex flex-col gap-3 p-6" role="status">
+            <div className="text-lg font-semibold">Checkout opening soon</div>
+            <p className="text-sm text-muted-foreground">
+              Online payment is not available yet. Your cart will be here when checkout opens.
+            </p>
+            <Link className="text-sm underline underline-offset-4 hover:text-foreground" href="/shop">
+              Continue browsing wines
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="mt-6">
