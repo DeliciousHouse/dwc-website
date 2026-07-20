@@ -4,6 +4,7 @@ import test from "node:test";
 
 const workflowUrl = new URL("../../.github/workflows/ci.yml", import.meta.url);
 const packageUrl = new URL("../../package.json", import.meta.url);
+const webPackageUrl = new URL("../../apps/web/package.json", import.meta.url);
 
 async function workflowText() {
   return (await readFile(workflowUrl, "utf8")).split(String.fromCharCode(13)).join("");
@@ -20,7 +21,7 @@ test("CI uses least privilege and cancels superseded runs", async () => {
   const workflow = await workflowText();
 
   assert.match(workflow, /permissions:\s*\n\s+contents: read/);
-  assert.match(workflow, /concurrency:\s*\n\s+group: .+\n\s+cancel-in-progress: true/);
+  assert.match(workflow, /concurrency:\s*\r?\n\s+group: .+\r?\n\s+cancel-in-progress: true/);
   assert.doesNotMatch(workflow, /secrets\./);
 });
 
@@ -40,7 +41,7 @@ test("CI installs pnpm dependencies from the lockfile with a safe cache", async 
 test("CI exercises the contract tests, assets, lint, typecheck, and build", async () => {
   const workflow = await workflowText();
   const commands = [
-    "pnpm test:ci",
+    "pnpm test",
     "pnpm assets:check",
     "pnpm -C apps/web exec prisma generate",
     "pnpm lint:changed",
@@ -59,6 +60,7 @@ test("CI exercises the contract tests, assets, lint, typecheck, and build", asyn
 test("package scripts expose workspace-aware deterministic CI entry points", async () => {
   const packageJson = JSON.parse(await readFile(packageUrl, "utf8"));
 
+  assert.equal(packageJson.scripts.test, "pnpm test:ci && pnpm -C apps/web test");
   assert.equal(packageJson.scripts["test:ci"], "node --test tests/ci/*.test.mjs");
   assert.equal(packageJson.scripts["lint:changed"], "node scripts/ci/lint-changed.mjs");
   assert.equal(
@@ -70,4 +72,18 @@ test("package scripts expose workspace-aware deterministic CI entry points", asy
     "pnpm -C packages/shared build && pnpm -C apps/web exec prisma generate && pnpm -C apps/web exec next build",
   );
   assert.doesNotMatch(packageJson.scripts["build:ci"], /npm (?:i|install)/);
+});
+
+test("local build entry points use the locked workspace without installing packages", async () => {
+  const packageJson = JSON.parse(await readFile(packageUrl, "utf8"));
+  const webPackageJson = JSON.parse(await readFile(webPackageUrl, "utf8"));
+
+  assert.equal(packageJson.scripts.build, "pnpm assets:check && pnpm build:ci");
+  assert.equal(webPackageJson.scripts.pretest, "prisma generate");
+  assert.equal(
+    webPackageJson.scripts.build,
+    "pnpm -C ../.. assets:check && prisma generate && next build",
+  );
+  assert.doesNotMatch(packageJson.scripts.build, /npm (?:i|install)/);
+  assert.doesNotMatch(webPackageJson.scripts.build, /npm (?:i|install)/);
 });

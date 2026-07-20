@@ -32,7 +32,7 @@ export default function PrivacyPage() {
       </ul>
       <h2>Payments</h2>
       <p>
-        Payments are processed by third-party providers (such as Stripe). We do
+        Payments are processed by Square. We do
         not store full payment card numbers. Payment providers handle your
         payment data according to their own policies.
       </p>
