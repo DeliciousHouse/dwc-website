@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.1.0.0] - 2026-07-20
+
+### Added
+- Production delivery now includes an immutable multi-stage web image, a reboot-resilient bounded Compose stack, database-aware application health checks, and a checked-in non-destructive Prisma migration baseline.
+- The production deployment runbook documents environment setup, startup, persistence, backup, rollback, and migration-baseline procedures.
+
+### Changed
+- CI now validates the production Compose schema and required interpolation using a committed non-secret placeholder fixture.
+- Compose contract tests enforce restart, health, CPU, memory, and bounded-logging requirements independently for both long-running services.
+
 ## [0.0.1.0] - 2026-07-19
 
 ### Added

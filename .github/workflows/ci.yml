@@ -49,6 +49,9 @@ jobs:
       - name: Test the CI contract and fail-closed lint detector
         run: pnpm test:ci
 
+      - name: Validate production Compose configuration
+        run: docker compose --env-file tests/fixtures/compose-production.env -f compose.production.yml config --quiet
+
       - name: Check asset integrity
         run: pnpm assets:check
 
