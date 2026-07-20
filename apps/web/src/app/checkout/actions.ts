@@ -182,8 +182,8 @@ export async function createOrderAndPaymentIntentAction(formData: FormData): Pro
       const reservations = cart.items.map((item) => ({
         productId: item.productId,
         qty: item.qty,
-        status: "reserved",
-        reason: "order",
+        status: "reserved" as const,
+        reason: "order" as const,
         orderId: created.id,
       }));
       if (reservations.length) {

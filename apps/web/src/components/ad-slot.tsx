@@ -14,7 +14,7 @@ type AdSlotProps = {
 
 declare global {
   interface Window {
-    adsbygoogle?: { push: (args: unknown) => void }[];
+    adsbygoogle?: unknown[];
   }
 }
 
@@ -38,7 +38,7 @@ export function AdSlot({
     } catch {
       // Ignore ad script failures to avoid breaking page render.
     }
-  }, [adClient, slot]);
+  }, [adClient, consent?.ads, slot]);
 
   return (
     <div
