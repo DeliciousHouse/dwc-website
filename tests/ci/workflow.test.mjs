@@ -79,6 +79,7 @@ test("local build entry points use the locked workspace without installing packa
   const webPackageJson = JSON.parse(await readFile(webPackageUrl, "utf8"));
 
   assert.equal(packageJson.scripts.build, "pnpm assets:check && pnpm build:ci");
+  assert.equal(webPackageJson.scripts.pretest, "prisma generate");
   assert.equal(
     webPackageJson.scripts.build,
     "pnpm -C ../.. assets:check && prisma generate && next build",

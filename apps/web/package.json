@@ -7,6 +7,7 @@
     "dev": "next dev --hostname 0.0.0.0 --port 3010",
     "build": "pnpm -C ../.. assets:check && prisma generate && next build",
     "start": "next start",
+    "pretest": "prisma generate",
     "test": "vitest run",
     "lint": "eslint",
     "typecheck": "tsc -p tsconfig.json --noEmit"
