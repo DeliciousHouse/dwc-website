@@ -56,14 +56,18 @@ test("CI exercises the contract tests, assets, lint, typecheck, and build", asyn
   }
 });
 
-test("package scripts expose deterministic CI entry points", async () => {
+test("package scripts expose workspace-aware deterministic CI entry points", async () => {
   const packageJson = JSON.parse(await readFile(packageUrl, "utf8"));
 
   assert.equal(packageJson.scripts["test:ci"], "node --test tests/ci/*.test.mjs");
   assert.equal(packageJson.scripts["lint:changed"], "node scripts/ci/lint-changed.mjs");
   assert.equal(
+    packageJson.scripts.typecheck,
+    "pnpm -C packages/shared typecheck && pnpm -C apps/web typecheck",
+  );
+  assert.equal(
     packageJson.scripts["build:ci"],
-    "pnpm -C apps/web exec prisma generate && pnpm -C apps/web exec next build",
+    "pnpm -C packages/shared build && pnpm -C apps/web exec prisma generate && pnpm -C apps/web exec next build",
   );
   assert.doesNotMatch(packageJson.scripts["build:ci"], /npm (?:i|install)/);
 });
