@@ -6,7 +6,7 @@ const workflowUrl = new URL("../../.github/workflows/ci.yml", import.meta.url);
 const packageUrl = new URL("../../package.json", import.meta.url);
 
 async function workflowText() {
-  return readFile(workflowUrl, "utf8");
+  return (await readFile(workflowUrl, "utf8")).split(String.fromCharCode(13)).join("");
 }
 
 test("CI runs for pull requests and pushes to main without path filters", async () => {
