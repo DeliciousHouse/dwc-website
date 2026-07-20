@@ -1,0 +1,118 @@
+x-bounded-logging: &bounded-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:16-alpine@sha256:4e6e670bb069649261c9c18031f0aded7bb249a5b6664ddec29c013a89310d50
+    restart: unless-stopped
+    cpus: "1.0"
+    mem_limit: 1g
+    mem_reservation: 256m
+    stop_grace_period: 1m
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in the production env file}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in the production env file}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the production env file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *bounded-logging
+    security_opt:
+      - no-new-privileges:true
+
+  migrate:
+    image: ${WEB_IMAGE:-dwc-web}-migrate:${WEB_IMAGE_TAG:?Set immutable WEB_IMAGE_TAG in the production env file}
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: migrator
+    restart: "no"
+    cpus: "1.0"
+    mem_limit: 1g
+    mem_reservation: 128m
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in the production env file}
+    working_dir: /app/apps/web
+    command: ["node", "node_modules/prisma/build/index.js", "migrate", "deploy"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    logging: *bounded-logging
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    image: ${WEB_IMAGE:-dwc-web}:${WEB_IMAGE_TAG:?Set immutable WEB_IMAGE_TAG in the production env file}
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: runner
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL in the production env file}
+        NEXT_PUBLIC_ADSENSE_CLIENT: ${NEXT_PUBLIC_ADSENSE_CLIENT:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_TOP: ${NEXT_PUBLIC_ADSENSE_SLOT_TOP:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE: ${NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM: ${NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_POST: ${NEXT_PUBLIC_ADSENSE_SLOT_POST:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_HOME: ${NEXT_PUBLIC_ADSENSE_SLOT_HOME:-}
+        NEXT_PUBLIC_ADSENSE_SLOT_SHOP: ${NEXT_PUBLIC_ADSENSE_SLOT_SHOP:-}
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+    restart: unless-stopped
+    init: true
+    cpus: "1.0"
+    mem_limit: 1g
+    mem_reservation: 256m
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in the production env file}
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET in the production env file}
+      AUTH_TRUST_HOST: "true"
+      AUTH_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL in the production env file}
+      NEXTAUTH_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL in the production env file}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID:-}
+      APPLE_CLIENT_SECRET: ${APPLE_CLIENT_SECRET:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-}
+    ports:
+      - "${WEB_BIND_ADDRESS:-0.0.0.0}:${WEB_PORT:?Set WEB_PORT in the production env file}:3010"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3010/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    logging: *bounded-logging
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-dwc_postgres_data}

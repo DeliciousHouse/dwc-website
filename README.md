@@ -1,5 +1,8 @@
 ## Delicious Wines — local development
 
+Production operators: see [`docs/production-deployment.md`](docs/production-deployment.md)
+for the immutable image, migration, backup, restart, and rollback runbook.
+
 ### One-command run (Docker)
 
 From the repo root:

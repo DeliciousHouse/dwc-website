@@ -1,0 +1,82 @@
+# syntax=docker/dockerfile:1.7
+
+FROM node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS deps
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat openssl \
+  && corepack enable \
+  && corepack prepare pnpm@9.15.4 --activate
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/package.json
+COPY packages/shared/package.json packages/shared/package.json
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+FROM deps AS migrator
+
+ENV NODE_ENV=production
+
+COPY --chown=node:node apps/web/prisma apps/web/prisma
+COPY --chown=node:node apps/web/prisma.config.ts apps/web/prisma.config.ts
+
+USER node
+
+FROM node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS builder
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+ENV NEXT_TELEMETRY_DISABLED=1
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat openssl \
+  && corepack enable \
+  && corepack prepare pnpm@9.15.4 --activate
+
+COPY --from=deps /app/ ./
+COPY . .
+
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_ADSENSE_CLIENT
+ARG NEXT_PUBLIC_ADSENSE_SLOT_TOP
+ARG NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE
+ARG NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM
+ARG NEXT_PUBLIC_ADSENSE_SLOT_POST
+ARG NEXT_PUBLIC_ADSENSE_SLOT_HOME
+ARG NEXT_PUBLIC_ADSENSE_SLOT_SHOP
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_ADSENSE_CLIENT=$NEXT_PUBLIC_ADSENSE_CLIENT
+ENV NEXT_PUBLIC_ADSENSE_SLOT_TOP=$NEXT_PUBLIC_ADSENSE_SLOT_TOP
+ENV NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE=$NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE
+ENV NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM=$NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM
+ENV NEXT_PUBLIC_ADSENSE_SLOT_POST=$NEXT_PUBLIC_ADSENSE_SLOT_POST
+ENV NEXT_PUBLIC_ADSENSE_SLOT_HOME=$NEXT_PUBLIC_ADSENSE_SLOT_HOME
+ENV NEXT_PUBLIC_ADSENSE_SLOT_SHOP=$NEXT_PUBLIC_ADSENSE_SLOT_SHOP
+ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
+
+RUN pnpm -C apps/web exec prisma generate \
+  && pnpm -C apps/web exec next build
+
+FROM node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3010
+
+RUN apk add --no-cache libc6-compat openssl \
+  && addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
+
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+
+USER nextjs
+EXPOSE 3010
+
+CMD ["node", "apps/web/server.js"]

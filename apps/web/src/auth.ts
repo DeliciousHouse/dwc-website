@@ -32,7 +32,7 @@ export const {
   pages: {
     signIn: "/signin",
   },
-  trustHost: process.env.NODE_ENV !== "production",
+  trustHost: process.env.NODE_ENV !== "production" || process.env.AUTH_TRUST_HOST === "true",
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
