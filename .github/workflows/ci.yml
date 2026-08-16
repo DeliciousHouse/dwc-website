@@ -49,6 +49,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Validate production Compose configuration
+        run: docker compose --env-file tests/fixtures/compose-production.env -f compose.production.yml config --quiet
+
       - name: Check asset integrity
         run: pnpm assets:check
 

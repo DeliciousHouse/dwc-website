@@ -8,6 +8,26 @@ async function text(path) {
   return readFile(new URL(path, root), "utf8");
 }
 
+function topLevelBlock(document, key) {
+  const normalized = document.split(String.fromCharCode(13)).join("");
+  const header = new RegExp(`^${key}:\\s*$`, "m").exec(normalized);
+  assert.ok(header, `${key} top-level block must exist`);
+
+  const remainder = normalized.slice(header.index + header[0].length);
+  const nextTopLevelKey = /^(?!\s|#)[^:\n]+:\s*$/m.exec(remainder);
+  return remainder.slice(0, nextTopLevelKey?.index);
+}
+
+function composeServiceBlock(compose, serviceName) {
+  const services = topLevelBlock(compose, "services");
+  const header = new RegExp(`^  ${serviceName}:\\s*$`, "m").exec(services);
+  assert.ok(header, `${serviceName} service must exist`);
+
+  const remainder = services.slice(header.index + header[0].length);
+  const nextService = /^  [A-Za-z0-9_.-]+:\s*$/m.exec(remainder);
+  return remainder.slice(0, nextService?.index);
+}
+
 test("production web image is immutable, locked, standalone, and non-root", async () => {
   const [dockerfile, nextConfig] = await Promise.all([
     text("Dockerfile.web"),
@@ -31,11 +51,11 @@ test("production web image is immutable, locked, standalone, and non-root", asyn
 
 test("production Compose isolates and bounds the healthy web and database services", async () => {
   const compose = await text("compose.production.yml");
+  const longRunningServices = ["db", "web"];
 
   assert.match(compose, /^\s{2}db:\s*$/m);
   assert.match(compose, /^\s{2}migrate:\s*$/m);
   assert.match(compose, /^\s{2}web:\s*$/m);
-  assert.match(compose, /restart: unless-stopped/g);
   assert.match(compose, /\$\{WEB_IMAGE_TAG:\?Set immutable WEB_IMAGE_TAG/);
   assert.match(compose, /postgres_data:\/var\/lib\/postgresql\/data/);
   assert.match(compose, /image: postgres:16-alpine@sha256:[0-9a-f]{64}/);
@@ -44,14 +64,25 @@ test("production Compose isolates and bounds the healthy web and database servic
   assert.match(compose, /condition: service_healthy/);
   assert.match(compose, /condition: service_completed_successfully/);
   assert.match(compose, /\/api\/health/);
-  assert.match(compose, /cpus:/g);
-  assert.match(compose, /mem_limit:/g);
   assert.match(compose, /max-size: "10m"/);
   assert.match(compose, /max-file: "3"/);
   assert.match(compose, /read_only: true/);
   assert.doesNotMatch(compose, /pgadmin|prisma db push|pnpm install|npm install|:\/app\b/i);
 
-  const dbService = compose.slice(compose.indexOf("  db:"), compose.indexOf("  migrate:"));
+  for (const serviceName of longRunningServices) {
+    const service = composeServiceBlock(compose, serviceName);
+    assert.match(service, /^    restart: unless-stopped\s*$/m, `${serviceName} must restart`);
+    assert.match(service, /^    healthcheck:\s*$/m, `${serviceName} must have a healthcheck`);
+    assert.match(service, /^    cpus:\s+\S+\s*$/m, `${serviceName} must have a CPU limit`);
+    assert.match(service, /^    mem_limit:\s+\S+\s*$/m, `${serviceName} must have a memory limit`);
+    assert.match(
+      service,
+      /^    logging: \*bounded-logging\s*$/m,
+      `${serviceName} must use bounded logging`,
+    );
+  }
+
+  const dbService = composeServiceBlock(compose, "db");
   assert.doesNotMatch(dbService, /^\s{4}ports:/m);
 });
 
