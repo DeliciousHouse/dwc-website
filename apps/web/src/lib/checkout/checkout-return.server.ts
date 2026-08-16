@@ -179,11 +179,33 @@ export function createCheckoutReturnStore({
           return "inventory_conflict";
         }
         if (current?.status !== "cancelled") return "unverified";
-        await prisma.order.updateMany({
-          where: { id: orderId, paymentProvider: "square", status: "cancelled" },
+        const cancelled = await prisma.order.updateMany({
+          where: {
+            id: orderId,
+            paymentProvider: "square",
+            status: "cancelled",
+            paymentStatus: current.paymentStatus,
+          },
           data: { paymentStatus: "cancelled" },
         });
-        return "cancelled";
+        if (cancelled.count === 1) return "cancelled";
+
+        const latest = await prisma.order.findUnique({
+          where: { id: orderId, paymentProvider: "square" },
+          select: { id: true, paymentProviderOrderId: true, status: true, paymentStatus: true },
+        });
+        if (latest?.paymentStatus === INVENTORY_CONFLICT_PAYMENT_STATUS) {
+          return "inventory_conflict";
+        }
+        if (
+          latest?.paymentStatus === "completed"
+          && (latest.status === "paid" || latest.status === "fulfilled")
+        ) {
+          return "paid";
+        }
+        return latest?.status === "cancelled" && latest.paymentStatus === "cancelled"
+          ? "cancelled"
+          : "unverified";
       }
 
       const pending = await prisma.order.updateMany({
