@@ -24,7 +24,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@auth/core": "0.41.1"
+      "@auth/core": "0.41.3"
     }
   },
   "devDependencies": {
