@@ -5,10 +5,15 @@ import {
   cancelCheckoutOrderAndReleaseInventory,
   type CheckoutInventoryPrisma,
 } from "./order-inventory.server";
+import { INVENTORY_CONFLICT_PAYMENT_STATUS } from "./payment-reconciliation";
 
 type TransactionClient = {
   order: {
     updateMany(args: unknown): Promise<{ count: number }>;
+    findUnique(args: unknown): Promise<{
+      status: "pending" | "paid" | "fulfilled" | "cancelled" | "refunded";
+      paymentStatus: string | null;
+    } | null>;
   };
   inventoryReservation: {
     findMany(args: unknown): Promise<Array<{
@@ -28,11 +33,20 @@ export type CheckoutPrisma = {
     findUnique(args: unknown): Promise<{
       id: string;
       paymentProviderOrderId: string | null;
+      status?: "pending" | "paid" | "fulfilled" | "cancelled" | "refunded";
+      paymentStatus?: string | null;
     } | null>;
-    updateMany(args: unknown): Promise<unknown>;
+    updateMany(args: unknown): Promise<{ count: number }>;
   };
-  $transaction(callback: (client: TransactionClient) => Promise<void>): Promise<void>;
+  $transaction<T>(callback: (client: TransactionClient) => Promise<T>): Promise<T>;
 };
+
+export type PaymentPersistenceOutcome =
+  | "paid"
+  | "pending"
+  | "cancelled"
+  | "inventory_conflict"
+  | "unverified";
 
 type AuditWriter = (input: {
   action: string;
@@ -69,8 +83,8 @@ export function createCheckoutReturnStore({
       status: PaymentOrderStatus;
     }) {
       if (status === "completed") {
-        let changed = false;
-        await prisma.$transaction(async (tx) => {
+        let auditAction: "checkout_payment_succeeded" | "checkout_payment_inventory_conflict" | null = null;
+        const outcome = await prisma.$transaction<PaymentPersistenceOutcome>(async (tx) => {
           const claimed = await tx.order.updateMany({
             where: {
               id: orderId,
@@ -79,29 +93,59 @@ export function createCheckoutReturnStore({
             },
             data: { status: "paid", paymentStatus: "completed" },
           });
-          if (claimed.count === 0) return;
-
-          const reservations = await tx.inventoryReservation.findMany({
-            where: { orderId, status: "reserved" },
-          });
-          if (reservations.length) {
-            await tx.inventoryReservation.updateMany({
+          if (claimed.count === 1) {
+            const reservations = await tx.inventoryReservation.findMany({
               where: { orderId, status: "reserved" },
-              data: { status: "consumed" },
             });
+            if (reservations.length) {
+              await tx.inventoryReservation.updateMany({
+                where: { orderId, status: "reserved" },
+                data: { status: "consumed" },
+              });
+            }
+            auditAction = "checkout_payment_succeeded";
+            return "paid";
           }
-          changed = true;
+
+          const current = await tx.order.findUnique({
+            where: { id: orderId, paymentProvider: "square" },
+            select: { status: true, paymentStatus: true },
+          });
+          if (
+            current?.paymentStatus === "completed"
+            && (current.status === "paid" || current.status === "fulfilled")
+          ) {
+            return "paid";
+          }
+          if (current?.paymentStatus === INVENTORY_CONFLICT_PAYMENT_STATUS) {
+            return "inventory_conflict";
+          }
+          if (current?.status !== "cancelled") return "unverified";
+
+          const conflicted = await tx.order.updateMany({
+            where: {
+              id: orderId,
+              paymentProvider: "square",
+              status: "cancelled",
+            },
+            data: { paymentStatus: INVENTORY_CONFLICT_PAYMENT_STATUS },
+          });
+          if (conflicted.count === 1) {
+            auditAction = "checkout_payment_inventory_conflict";
+            return "inventory_conflict";
+          }
+          return "unverified";
         });
 
-        if (changed) {
+        if (auditAction) {
           await audit({
-            action: "checkout_payment_succeeded",
+            action: auditAction,
             entityType: "order",
             entityId: orderId,
             data: { provider: "square" },
           });
         }
-        return;
+        return outcome;
       }
 
       if (status === "cancelled") {
@@ -119,10 +163,52 @@ export function createCheckoutReturnStore({
             data: { provider: "square" },
           });
         }
-        return;
+        if (changed) return "cancelled";
+
+        const current = await prisma.order.findUnique({
+          where: { id: orderId, paymentProvider: "square" },
+          select: { id: true, paymentProviderOrderId: true, status: true, paymentStatus: true },
+        });
+        if (
+          current?.paymentStatus === "completed"
+          && (current.status === "paid" || current.status === "fulfilled")
+        ) {
+          return "paid";
+        }
+        if (current?.paymentStatus === INVENTORY_CONFLICT_PAYMENT_STATUS) {
+          return "inventory_conflict";
+        }
+        if (current?.status !== "cancelled") return "unverified";
+        const cancelled = await prisma.order.updateMany({
+          where: {
+            id: orderId,
+            paymentProvider: "square",
+            status: "cancelled",
+            paymentStatus: current.paymentStatus,
+          },
+          data: { paymentStatus: "cancelled" },
+        });
+        if (cancelled.count === 1) return "cancelled";
+
+        const latest = await prisma.order.findUnique({
+          where: { id: orderId, paymentProvider: "square" },
+          select: { id: true, paymentProviderOrderId: true, status: true, paymentStatus: true },
+        });
+        if (latest?.paymentStatus === INVENTORY_CONFLICT_PAYMENT_STATUS) {
+          return "inventory_conflict";
+        }
+        if (
+          latest?.paymentStatus === "completed"
+          && (latest.status === "paid" || latest.status === "fulfilled")
+        ) {
+          return "paid";
+        }
+        return latest?.status === "cancelled" && latest.paymentStatus === "cancelled"
+          ? "cancelled"
+          : "unverified";
       }
 
-      await prisma.order.updateMany({
+      const pending = await prisma.order.updateMany({
         where: {
           id: orderId,
           paymentProvider: "square",
@@ -130,6 +216,33 @@ export function createCheckoutReturnStore({
         },
         data: { paymentStatus: status },
       });
+      if (pending.count === 1) return "pending";
+
+      const current = await prisma.order.findUnique({
+        where: { id: orderId, paymentProvider: "square" },
+        select: { id: true, paymentProviderOrderId: true, status: true, paymentStatus: true },
+      });
+      if (
+        current?.paymentStatus === "completed"
+        && (current.status === "paid" || current.status === "fulfilled")
+      ) {
+        return "paid";
+      }
+      if (current?.status === "cancelled") {
+        await prisma.order.updateMany({
+          where: {
+            id: orderId,
+            paymentProvider: "square",
+            status: "cancelled",
+            paymentStatus: "expired",
+          },
+          data: { paymentStatus: "expired" },
+        });
+        return current.paymentStatus === INVENTORY_CONFLICT_PAYMENT_STATUS
+          ? "inventory_conflict"
+          : "cancelled";
+      }
+      return "unverified";
     },
   };
 }

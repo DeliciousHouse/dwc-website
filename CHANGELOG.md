@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.1.1.0] - 2026-07-20
+
+### Fixed
+- Production Compose now injects exactly the three server-only Square settings at runtime while blank credentials continue to fail soft.
+- Checkout and return redirects now use the canonical site URL instead of reflecting untrusted request hosts.
+- Late Square completions after inventory release now persist an explicit reconciliation state, remain monotonic, and surface actionable customer and admin notices instead of appearing paid.
+
+### Changed
+- Expired checkout reconciliation now revisits released Square orders and verifies settlement again after local cancellation to close the expiry race.
+
 ## [0.1.0.0] - 2026-07-20
 
 ### Added

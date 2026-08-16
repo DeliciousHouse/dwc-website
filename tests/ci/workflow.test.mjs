@@ -100,7 +100,7 @@ test("CI validates production Compose with a complete placeholder fixture", asyn
   }
 });
 
-test("root release metadata records the 0.1.0.0 production capability release", async () => {
+test("root release metadata records the 0.1.1.0 settlement safety release", async () => {
   const [version, packageJsonText, changelog] = await Promise.all([
     readFile(versionUrl, "utf8"),
     readFile(packageUrl, "utf8"),
@@ -108,9 +108,9 @@ test("root release metadata records the 0.1.0.0 production capability release", 
   ]);
   const packageJson = JSON.parse(packageJsonText);
 
-  assert.equal(version.trim(), "0.1.0.0");
-  assert.equal(packageJson.version, "0.1.0.0");
-  assert.match(changelog, /^## \[0\.1\.0\.0\] - 2026-07-20$/m);
+  assert.equal(version.trim(), "0.1.1.0");
+  assert.equal(packageJson.version, "0.1.1.0");
+  assert.match(changelog, /^## \[0\.1\.1\.0\] - 2026-07-20$/m);
 });
 
 test("package scripts expose workspace-aware deterministic CI entry points", async () => {

@@ -13,6 +13,10 @@ const messages = {
     title: "Checkout cancelled",
     body: "No completed payment was recorded. Your cart is still available if you’d like to try again.",
   },
+  "payment-review": {
+    title: "Payment received — order review required",
+    body: "Square confirmed the payment after the inventory hold expired. We saved your order for support review; do not submit another payment. We will confirm fulfillment or a refund.",
+  },
   unverified: {
     title: "Payment not verified",
     body: "We could not verify a completed Square payment. Your cart has not been cleared.",

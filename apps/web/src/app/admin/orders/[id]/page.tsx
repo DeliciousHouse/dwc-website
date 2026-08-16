@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPrisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
+import { getPaymentReconciliationNotice } from "@/lib/checkout/payment-reconciliation";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
     postalCode?: string;
     country?: string;
   } | null;
+  const paymentNotice = getPaymentReconciliationNotice(order.paymentStatus);
 
   return (
     <div className="space-y-6">
@@ -49,9 +51,15 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
             Provider: <span className="font-medium text-foreground">{order.paymentProvider ?? "n/a"}</span>
           </div>
           <div className="text-zinc-600 dark:text-zinc-300">
+            Provider status: <span className="font-medium text-foreground">{order.paymentStatus ?? "n/a"}</span>
+          </div>
+          <div className="text-zinc-600 dark:text-zinc-300">
             Provider order:{" "}
             <span className="font-medium text-foreground">{order.paymentProviderOrderId ?? "n/a"}</span>
           </div>
+          {paymentNotice ? (
+            <div className="mt-2 font-medium text-red-700 dark:text-red-300">{paymentNotice}</div>
+          ) : null}
         </div>
 
         <div className="rounded-lg border border-zinc-200 bg-white p-5 text-sm dark:border-white/10 dark:bg-black">

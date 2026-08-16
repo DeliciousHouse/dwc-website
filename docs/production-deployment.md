@@ -71,15 +71,24 @@ Deployment coordinates have safe template defaults but should be reviewed:
 
 Optional integrations are disabled by leaving their variables empty:
 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `APPLE_CLIENT_ID`,
-`APPLE_CLIENT_SECRET`, `RESEND_API_KEY`, `RESEND_FROM`,
+`APPLE_CLIENT_SECRET`, `RESEND_API_KEY`, and `RESEND_FROM`.
+
+Square checkout uses the server-only `SQUARE_ACCESS_TOKEN`, `SQUARE_ENVIRONMENT`,
+and `SQUARE_LOCATION_ID` values from `/etc/dwc/dwc.env`. Set `SQUARE_ENVIRONMENT`
+to `sandbox` or `production`. Leave all three Square variables blank to keep
+checkout fail-soft and disabled; missing or partial Square configuration does not
+prevent the application from starting. These values are injected only when the web
+container starts. They are never Docker build arguments and must never use a
+`NEXT_PUBLIC_*` prefix.
+
+Public analytics integrations are also optional:
 `NEXT_PUBLIC_ADSENSE_CLIENT`, `NEXT_PUBLIC_ADSENSE_SLOT_TOP`,
 `NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE`, `NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM`,
 `NEXT_PUBLIC_ADSENSE_SLOT_POST`, `NEXT_PUBLIC_ADSENSE_SLOT_HOME`,
 `NEXT_PUBLIC_ADSENSE_SLOT_SHOP`, and `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 The `NEXT_PUBLIC_*` values are public and baked into the image, so changing one
-requires a rebuild. Payment configuration is intentionally absent from this
-production artifact; the existing Stripe path is excluded for this alcohol business
-and remains disabled pending the separately authorized processor work.
+requires a rebuild. The excluded Stripe path remains disabled for this alcohol
+business.
 
 Generate values with an approved secret manager or a secure host command. Never paste
 those values into logs, PRs, issues, or card comments.

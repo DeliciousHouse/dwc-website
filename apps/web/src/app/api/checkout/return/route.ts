@@ -3,6 +3,8 @@ import type {
   PaymentAdapter,
   PaymentOrderStatus,
 } from "@/lib/payments/payment-adapter";
+import type { PaymentPersistenceOutcome } from "@/lib/checkout/checkout-return.server";
+import { getSiteUrl } from "@/lib/site";
 
 export const runtime = "nodejs";
 
@@ -15,11 +17,12 @@ type CheckoutReturnDependencies = {
   recordPaymentResult(input: {
     orderId: string;
     status: PaymentOrderStatus;
-  }): Promise<void>;
+  }): Promise<PaymentPersistenceOutcome>;
+  getSiteUrl(): string;
 };
 
-function redirectTo(request: Request, status: string, clearCart = false) {
-  const location = new URL(`/checkout/success?status=${encodeURIComponent(status)}`, request.url);
+function redirectTo(siteUrl: string, status: string, clearCart = false) {
+  const location = new URL(`/checkout/success?status=${encodeURIComponent(status)}`, siteUrl);
   const headers = new Headers({ location: location.toString() });
   if (clearCart) {
     headers.set(
@@ -32,22 +35,25 @@ function redirectTo(request: Request, status: string, clearCart = false) {
 
 export function createCheckoutReturnHandler(deps: CheckoutReturnDependencies) {
   return async function checkoutReturn(request: Request) {
+    const siteUrl = deps.getSiteUrl();
     const orderId = new URL(request.url).searchParams.get("orderId")?.trim();
     const adapter = deps.createPaymentAdapter();
-    if (!orderId || !adapter) return redirectTo(request, "unverified");
+    if (!orderId || !adapter) return redirectTo(siteUrl, "unverified");
 
     const order = await deps.findOrder(orderId);
-    if (!order?.providerOrderId) return redirectTo(request, "unverified");
+    if (!order?.providerOrderId) return redirectTo(siteUrl, "unverified");
 
     try {
       const status = await adapter.getOrderStatus(order.providerOrderId);
-      await deps.recordPaymentResult({ orderId: order.id, status });
+      const persisted = await deps.recordPaymentResult({ orderId: order.id, status });
 
-      if (status === "completed") return redirectTo(request, "paid", true);
-      if (status === "cancelled") return redirectTo(request, "cancelled");
-      return redirectTo(request, "pending");
+      if (persisted === "paid") return redirectTo(siteUrl, "paid", true);
+      if (persisted === "inventory_conflict") return redirectTo(siteUrl, "payment-review");
+      if (persisted === "cancelled") return redirectTo(siteUrl, "cancelled");
+      if (persisted === "pending") return redirectTo(siteUrl, "pending");
+      return redirectTo(siteUrl, "unverified");
     } catch {
-      return redirectTo(request, "unverified");
+      return redirectTo(siteUrl, "unverified");
     }
   };
 }
@@ -60,5 +66,6 @@ export async function GET(request: Request) {
     createPaymentAdapter: createSquarePaymentAdapterFromEnv,
     findOrder: findCheckoutOrder,
     recordPaymentResult,
+    getSiteUrl,
   })(request);
 }

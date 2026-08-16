@@ -161,6 +161,52 @@ test("production artifacts do not enable the excluded Stripe integration", async
   assert.doesNotMatch(artifacts.join("\n"), /STRIPE_/);
 });
 
+test("production Square configuration is runtime-only and fails soft when blank", async () => {
+  const [dockerfile, compose, envTemplate, runbook] = await Promise.all([
+    text("Dockerfile.web"),
+    text("compose.production.yml"),
+    text("env.production.example"),
+    text("docs/production-deployment.md"),
+  ]);
+  const webService = compose.slice(compose.indexOf("  web:"));
+  const buildBlock = webService.slice(
+    webService.indexOf("    build:"),
+    webService.indexOf("    restart:"),
+  );
+  const environmentBlock = webService.slice(
+    webService.indexOf("    environment:"),
+    webService.indexOf("    ports:"),
+  );
+  const squareVariables = [
+    "SQUARE_ACCESS_TOKEN",
+    "SQUARE_ENVIRONMENT",
+    "SQUARE_LOCATION_ID",
+  ];
+  const templateSquareVariables = [...envTemplate.matchAll(/^(SQUARE_[A-Z_]+)=/gm)]
+    .map((match) => match[1]);
+  const runtimeSquareVariables = [...environmentBlock.matchAll(/^\s{6}(SQUARE_[A-Z_]+):/gm)]
+    .map((match) => match[1]);
+
+  assert.deepEqual(templateSquareVariables, squareVariables);
+  assert.deepEqual(runtimeSquareVariables, squareVariables);
+
+  for (const variable of squareVariables) {
+    assert.match(envTemplate, new RegExp(`^${variable}=$`, "m"));
+    assert.match(
+      environmentBlock,
+      new RegExp(`^\\s{6}${variable}: \\$\\{` + `${variable}:-\\}$`, "m"),
+    );
+    assert.match(runbook, new RegExp(`\\b${variable}\\b`));
+    assert.doesNotMatch(`${dockerfile}\n${buildBlock}`, new RegExp(variable));
+    assert.doesNotMatch(
+      `${dockerfile}\n${compose}\n${envTemplate}`,
+      new RegExp(`NEXT_PUBLIC_(?:${variable}|SQUARE_)`),
+    );
+  }
+
+  assert.match(runbook, /leave (?:all three|the three) .*Square.* blank/i);
+});
+
 test("production runbook covers secrets, lifecycle, persistence, backup, and rollback", async () => {
   const runbook = await text("docs/production-deployment.md");
   const requiredVariables = [
