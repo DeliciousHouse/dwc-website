@@ -13,6 +13,7 @@ import { Toaster } from "@/ui/sonner";
 import { getSiteUrl } from "@/lib/site";
 import { getServerConsent } from "@/lib/consent-server";
 import { CartDrawerWrapper } from "@/components/cart/cart-drawer-wrapper";
+import { MobileNavigation } from "@/components/mobile-navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,11 +79,12 @@ export default async function RootLayout({
                   <SiteImage id="logoInverted" className="h-8 w-8" priority />
                   <span>Delicious Wines</span>
                 </Link>
-                <nav className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <Link className="hover:text-foreground" href="/story">
+                <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground sm:gap-2 lg:gap-4">
+                  <MobileNavigation />
+                  <Link className="hidden hover:text-foreground sm:inline" href="/story">
                     Story
                   </Link>
-                  <Link className="hover:text-foreground" href="/shop">
+                  <Link className="hidden hover:text-foreground sm:inline" href="/shop">
                     Selections
                   </Link>
                   <Link className="hidden hover:text-foreground sm:inline" href="/wine-club">
