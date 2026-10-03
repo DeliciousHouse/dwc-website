@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+/* eslint-disable @next/next/no-html-link-for-pages -- Full navigation resets the native disclosure without client state. */
 export function MobileNavigation() {
   return (
     <details className="sm:hidden">
@@ -10,12 +9,12 @@ export function MobileNavigation() {
         aria-label="Mobile navigation"
         className="absolute inset-x-0 top-full grid border-b border-border/70 bg-background p-4 shadow-lg"
       >
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/story">Story</Link>
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/shop">Selections</Link>
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/wine-club">Club</Link>
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/tastings">Tastings</Link>
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/contact">Contact</Link>
-        <Link className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/account">Account</Link>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/story">Story</a>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/shop">Selections</a>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/wine-club">Club</a>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/tastings">Tastings</a>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/contact">Contact</a>
+        <a className="rounded-md px-4 py-3 hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring" href="/account">Account</a>
       </nav>
     </details>
   );
