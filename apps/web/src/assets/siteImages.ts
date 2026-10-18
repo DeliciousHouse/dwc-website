@@ -70,7 +70,7 @@ export const siteImages: Record<SiteImageId, SiteImage> = {
   contactVineyard: {
     id: "contactVineyard",
     localPath: "/media/stock/contact-vineyard.jpg",
-    alt: "Vineyard landscape",
+    alt: "Wine glasses, a bottle and a meal on a restaurant table",
     width: 4167,
     height: 3376,
     creditText: "Delicious Wines (local stock)",
