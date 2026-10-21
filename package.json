@@ -10,6 +10,7 @@
     "dev": "pnpm -C apps/web dev",
     "assets:sync": "tsx scripts/sync-assets.ts",
     "assets:check": "tsx scripts/check-assets.ts",
+    "assets:icons": "tsx scripts/generate-brand-icons.ts",
     "build": "pnpm assets:check && pnpm build:ci",
     "build:ci": "pnpm -C packages/shared build && pnpm -C apps/web exec prisma generate && pnpm -C apps/web exec next build",
     "start": "pnpm -C apps/web start",
