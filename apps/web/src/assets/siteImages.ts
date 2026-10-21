@@ -1,4 +1,5 @@
 export type SiteImageId =
+  | "logo"
   | "logoInverted"
   | "heroVineyard"
   | "storyBarrel"
@@ -18,12 +19,23 @@ export type SiteImage = {
 };
 
 export const siteImages: Record<SiteImageId, SiteImage> = {
+  // Dark emblem: for light surfaces (the whole site is light-only today).
+  logo: {
+    id: "logo",
+    localPath: "/DW_logo.png",
+    alt: "Delicious Wines logo",
+    width: 700,
+    height: 673,
+    creditText: "Delicious Wines",
+    creditUrl: "https://github.com/DeliciousHouse/dwc-website",
+  },
+  // Near-white emblem: only for dark surfaces. Invisible on the light header.
   logoInverted: {
     id: "logoInverted",
     localPath: "/invert_DW_logo.png",
     alt: "Delicious Wines logo",
-    width: 512,
-    height: 512,
+    width: 700,
+    height: 673,
     creditText: "Delicious Wines",
     creditUrl: "https://github.com/DeliciousHouse/dwc-website",
   },

@@ -43,6 +43,11 @@ export const metadata: Metadata = {
     description: "An editorial wine list with clear context.",
     siteName: "Delicious Wines",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Delicious Wines",
+    description: "An editorial wine list with clear context.",
+  },
   alternates: {
     canonical: "/",
   },
@@ -76,7 +81,7 @@ export default async function RootLayout({
             <header className="sticky top-0 z-40 border-b border-border/70 bg-background">
               <div className="dw-container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
-                  <SiteImage id="logoInverted" className="h-8 w-8" priority />
+                  <SiteImage id="logo" className="h-8 w-8 object-contain" priority />
                   <span>Delicious Wines</span>
                 </Link>
                 <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground sm:gap-2 lg:gap-4">

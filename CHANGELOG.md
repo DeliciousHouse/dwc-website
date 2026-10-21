@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- The header now loads the dark emblem (`DW_logo.png`); it used the near-white `invert_DW_logo.png` on the near-white header, which was nearly invisible.
+
+### Added
+- Open Graph and Twitter share image (1200x630), apple-touch icon, 192/512 app icons and a web manifest, generated from the existing emblem on the site background (`pnpm assets:icons`).
+
 ## [0.1.1.0] - 2026-07-20
 
 ### Fixed
