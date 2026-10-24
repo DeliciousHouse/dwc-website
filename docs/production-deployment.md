@@ -86,6 +86,15 @@ Public analytics integrations are also optional:
 `NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE`, `NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM`,
 `NEXT_PUBLIC_ADSENSE_SLOT_POST`, `NEXT_PUBLIC_ADSENSE_SLOT_HOME`,
 `NEXT_PUBLIC_ADSENSE_SLOT_SHOP`, and `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+
+GA additionally requires server-side `GA_CONFIGURATION_APPROVED=true`; leave it
+unset until the owner approves O36 and records the property/stream, production
+hosts, events, consent and privacy configuration. The initial loader excludes
+query/hash URLs and non-allowlisted account, token, checkout and form routes.
+This does not control an already-loaded tag's enhanced measurement. Review and
+disable unapproved history/form/search/outbound-link collection in the GA stream
+before setting the approval flag; verify URL/email redaction and real network
+behavior. The flag is an operational release gate, not proof of legal compliance.
 The `NEXT_PUBLIC_*` values are public and baked into the image, so changing one
 requires a rebuild. The excluded Stripe path remains disabled for this alcohol
 business.

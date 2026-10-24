@@ -49,3 +49,34 @@ a configured database. No production credentials were loaded. Provide a syntheti
 database for full browser consent/withdrawal checks. This limitation is separate
 from the passing production compilation. The root `pnpm db:generate` wrapper also
 failed on Windows; Prisma generation through pretest and build succeeded.
+
+## Continued technical verification (24 October 2026)
+
+The same draft now requires `GA_CONFIGURATION_APPROVED=true` in addition to the
+existing consent/ID/production checks. It is deliberately unset by default. The
+operator must complete O36 and the GA stream's privacy/event review before enabling
+it. Initial URLs with queries/fragments, personal/account/checkout/form routes and
+unrecognized paths do not initialize the loader. Initial page context uses a fixed
+site title and empty referrer. This conservative route coverage needs owner review.
+
+This is not a complete SPA privacy guarantee. Google documents that enhanced
+measurement can collect history pageviews independently of `send_page_view`; its
+history/form/search/link settings and data redaction need approved property-level
+configuration and network verification before the flag is set. See
+https://developers.google.com/analytics/devguides/collection/ga4/views and
+https://support.google.com/analytics/answer/13544947 . No property was accessed or
+changed and no tag was delivered during this task.
+
+An external-to-source test fixture used the locked PGlite dependency in memory,
+both checked-in migrations, the generated Prisma client and real PrismaPg adapter
+with a test-only pg pool shim. The cart upsell selection and transaction read passed.
+No listener, credentials or external DB service were created. Windows path warnings
+were emitted, despite successful queries and exit 0. This is adapter integration
+evidence, not full-app or production proof.
+
+The actual CookieConsentBanner, preferences button, Next Link and shared Button
+were bundled into an offline browser fixture. All requests were fulfilled locally
+or blocked. Ten checks passed: initial choices off, reject persistence, keyboard
+reopening/focus, granular save, saved choice restoration, accept, withdrawal,
+malformed-cookie recovery and 390px reflow. Full root-layout/Prisma/browser
+integration, server-rendered consent behavior and external receipt remain open.

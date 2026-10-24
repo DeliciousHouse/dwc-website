@@ -20,11 +20,23 @@ describe("production analytics boundary", () => {
     "http://deliciouswines.org", "https://preview.deliciouswines.org",
     "http://localhost:3010", "https://dwc-preview.vercel.app",
     "https://deliciouswines.org.example.com", "https://deliciouswines.org:8443",
+    "https://deliciouswines.org/reset-password?token=synthetic-token",
+    "https://deliciouswines.org/verify-email?token=synthetic-token",
+    "https://deliciouswines.org/account", "https://deliciouswines.org/admin/orders/synthetic-id",
+    "https://deliciouswines.org/contact", "https://deliciouswines.org/checkout",
+    "https://deliciouswines.org/?email=synthetic-value",
+    "https://deliciouswines.org/story#synthetic-private-fragment",
   ])("does not load or queue events on %s", (url) => {
     const { context, scripts } = browser(url);
     runInNewContext(analyticsBootstrap("G-TESTONLY")!, context);
     expect(scripts).toHaveLength(0);
     expect(context.window.dataLayer).toHaveLength(0);
+  });
+  it("uses a bounded initial page context without referrer, title or query contents", () => {
+    const { context } = browser("https://deliciouswines.org/story");
+    runInNewContext(analyticsBootstrap("G-TESTONLY")!, context);
+    const config = Array.from(context.window.dataLayer[1] as ArrayLike<unknown>)[2];
+    expect(config).toEqual({ anonymize_ip: true, page_location: "https://deliciouswines.org/story", page_referrer: "", page_title: "Delicious Wines" });
   });
   it.each(["https://deliciouswines.org", "https://www.deliciouswines.org"])("loads only once on %s", (url) => {
     const { context, scripts } = browser(url);
