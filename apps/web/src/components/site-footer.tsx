@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookiePreferencesButton } from "./cookie-preferences-button";
 
 const LEGAL_LINKS: Array<{ href: string; label: string }> = [
   { href: "/terms", label: "Terms" },
@@ -19,16 +20,20 @@ export function SiteFooter() {
         <p className="max-w-2xl">
           Adult signature required on delivery. Must be 21+ to purchase.
         </p>
-        <nav className="flex flex-wrap gap-x-3 gap-y-2">
+        <nav aria-label="Footer links" className="flex flex-wrap gap-x-3 gap-y-2">
           {LEGAL_LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="underline-offset-4 hover:text-foreground hover:underline">
               {l.label}
             </Link>
           ))}
         </nav>
+        <CookiePreferencesButton />
         <p className="text-[11px] leading-relaxed text-muted-foreground">
           © {new Date().getFullYear()} Delicious Wines. Drink responsibly.
         </p>
+        <a href="https://hidconsult.com" className="w-fit underline underline-offset-4 hover:text-foreground">
+          Built by HIDconsult
+        </a>
       </div>
     </footer>
   );

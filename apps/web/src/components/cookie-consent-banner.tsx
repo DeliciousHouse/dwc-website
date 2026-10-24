@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/ui/button";
 import { CONSENT_COOKIE } from "@/lib/consent";
+import { getClientConsent } from "@/lib/consent-client";
+import { COOKIE_PREFERENCES_EVENT } from "./cookie-preferences-button";
 
 type ConsentChoice = {
   analytics: boolean;
@@ -18,27 +20,36 @@ function setConsentCookie(choice: ConsentChoice) {
   document.cookie = `${CONSENT_COOKIE}=${value}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
 }
 
-function getExistingConsent() {
-  const parts = document.cookie.split(";").map((p) => p.trim());
-  const match = parts.find((p) => p.startsWith(`${CONSENT_COOKIE}=`));
-  return Boolean(match);
-}
-
 export function CookieConsentBanner() {
   const [open, setOpen] = useState(false);
-  const [analytics, setAnalytics] = useState(true);
-  const [ads, setAds] = useState(true);
+  const [analytics, setAnalytics] = useState(false);
+  const [ads, setAds] = useState(false);
+  const panel = useRef<HTMLDivElement>(null);
+  const requested = useRef(false);
 
   useEffect(() => {
     // Consent is stored in a browser-only cookie, so read it after hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOpen(!getExistingConsent());
+    setOpen(!getClientConsent());
+    function reopen() {
+      const consent = getClientConsent();
+      setAnalytics(consent?.analytics ?? false);
+      setAds(consent?.ads ?? false);
+      requested.current = true;
+      setOpen(true);
+    }
+    window.addEventListener(COOKIE_PREFERENCES_EVENT, reopen);
+    return () => window.removeEventListener(COOKIE_PREFERENCES_EVENT, reopen);
   }, []);
+
+  useEffect(() => {
+    if (open && requested.current) panel.current?.focus();
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur">
+    <div ref={panel} role="region" aria-label="Cookie preferences" tabIndex={-1} className="fixed inset-x-0 bottom-0 z-50 max-h-dvh overflow-y-auto border-t border-border bg-background/95 backdrop-blur">
       <div className="dw-container flex flex-col gap-4 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="text-muted-foreground">
           We use cookies to keep the site running and, with your consent, to enable analytics and ads.{" "}
@@ -63,6 +74,16 @@ export function CookieConsentBanner() {
             </label>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setConsentCookie({ analytics: false, ads: false });
+                setOpen(false);
+                window.location.reload();
+              }}
+            >
+              Reject all
+            </Button>
             <Button
               variant="outline"
               onClick={() => {
