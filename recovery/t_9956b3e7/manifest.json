@@ -1,0 +1,28 @@
+{
+  "source_head": "c1d4939a1598a98e387fd112d2a758595136caae",
+  "source_task": "t_e0492ffe",
+  "recovery_task": "t_9956b3e7",
+  "files": [
+    {
+      "path": "review-evidence/home-1280.png",
+      "bytes": 600327,
+      "sha256": "8aeff7086ee8632b6d9dffeb2d68ca5f78cbd2d05bfb32abc09730bf0e210a02"
+    },
+    {
+      "path": "review-evidence/home-320.png",
+      "bytes": 125002,
+      "sha256": "e6bd7857cce228ce6e89fafebed424fad7f1384b92a00c0347b020ad6c895f5a"
+    },
+    {
+      "path": "review-evidence/home-640.png",
+      "bytes": 202926,
+      "sha256": "94ff6ca57884c9ed93b748076e6b29bf9f4ce11f4354e81fa38a835daa54b8a6"
+    },
+    {
+      "path": "review-evidence/keyboard-tastings.png",
+      "bytes": 35361,
+      "sha256": "336433d1c573c929972c22b84e4e2c8366b006069707e5d0d38fffcf6585f35e"
+    }
+  ],
+  "archive_sha256": "5fb2430afcc27417ccd06a69b183eabde78122396c1ca1f5fc85dd35bd48dfd3"
+}
