@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { getPrisma } from "@/lib/db";
 import { ShopPageClient } from "./shop-page-client";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/shop" },
+};
 
 export default async function ShopPage() {
   const products = await getPrisma().product.findMany({

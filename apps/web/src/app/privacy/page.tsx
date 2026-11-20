@@ -3,6 +3,7 @@ import { LegalPage } from "../(legal)/legal-page";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Our Story",
+  alternates: { canonical: "/story" },
 };
 
 export default function StoryPage() {

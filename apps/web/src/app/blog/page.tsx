@@ -7,6 +7,7 @@ import { posts } from "./posts";
 export const metadata = {
   title: "Journal",
   description: "Notes on producers, tables, and the people behind them.",
+  alternates: { canonical: "/blog" },
 };
 
 export default function BlogPage() {

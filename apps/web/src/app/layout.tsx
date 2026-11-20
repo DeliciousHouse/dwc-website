@@ -48,9 +48,6 @@ export const metadata: Metadata = {
     title: "Delicious Wines",
     description: "An editorial wine list with clear context.",
   },
-  alternates: {
-    canonical: "/",
-  },
 };
 
 export default async function RootLayout({
