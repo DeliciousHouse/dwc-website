@@ -49,7 +49,7 @@ export function CookieConsentBanner() {
   if (!open) return null;
 
   return (
-    <div ref={panel} role="region" aria-label="Cookie preferences" tabIndex={-1} className="fixed inset-x-0 bottom-0 z-50 max-h-dvh overflow-y-auto border-t border-border bg-background/95 backdrop-blur">
+    <div ref={panel} role="region" aria-label="Cookie preferences" tabIndex={-1} className="sticky bottom-0 z-50 max-h-dvh overflow-y-auto border-t border-border bg-background/95 backdrop-blur">
       <div className="dw-container flex flex-col gap-4 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="text-muted-foreground">
           We use cookies to keep the site running and, with your consent, to enable analytics and ads.{" "}
