@@ -3,6 +3,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Wine Club",
   description: "A quarterly release with clear notes and simple choices.",
+  alternates: { canonical: "/wine-club" },
 };
 
 export default function WineClubPage() {
