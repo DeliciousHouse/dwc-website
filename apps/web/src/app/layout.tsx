@@ -73,7 +73,6 @@ export default async function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AnalyticsScripts />
           <AgeGate />
-          <CookieConsentBanner />
           <div className="min-h-dvh bg-background text-foreground">
             <header className="sticky top-0 z-40 border-b border-border/70 bg-background">
               <div className="dw-container flex h-16 items-center justify-between">
@@ -107,6 +106,7 @@ export default async function RootLayout({
             </header>
             <main className="dw-container py-10">{children}</main>
             <SiteFooter />
+            <CookieConsentBanner />
           </div>
           <Toaster />
         </ThemeProvider>

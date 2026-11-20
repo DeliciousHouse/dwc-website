@@ -57,6 +57,15 @@ docker compose --profile tools up
 
 Use the DB connection values from your `.env` (host is `db` from inside Docker, or `localhost` from your machine).
 
+### Cookie banner browser regression
+
+With a local preview running against a migrated development database, use Python
+Playwright and installed Chrome to check the footer links before making a cookie choice:
+
+```bash
+python tests/browser/cookie-footer.py http://localhost:3010
+```
+
 ### Notes
 
 - **Env template**: This repo includes `env.example` and (when not filtered by tooling) `.env.example`. Either can be copied to `.env`.
