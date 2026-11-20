@@ -4,6 +4,7 @@ import { Button } from "@/ui/button";
 
 export const metadata = {
   title: "Tastings",
+  alternates: { canonical: "/tastings" },
 };
 
 export default function TastingsPage() {
